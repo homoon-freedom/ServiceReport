@@ -1511,7 +1511,7 @@
           </div>
           <div class="form-group">
             <label>ENGINEER (담당 엔지니어)</label>
-            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="Kil-Dong Hong" />
+            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="Engineer Namg" />
           </div>
 
           <!-- 키워드 입력 창 (저장 버튼 바로 위 배치) -->
@@ -1588,7 +1588,7 @@
           </div>
           <div class="form-group">
             <label>ENGINEER APPROVAL 표기</label>
-            <input type="text" id="inpEngSignText" oninput="updateApproval('engineerText', this.value)" placeholder="예: Kil-Dong Hong" />
+            <input type="text" id="inpEngSignText" oninput="updateApproval('engineerText', this.value)" placeholder="예: Engineer Namg" />
           </div>
           <div class="form-group full" style="display:flex; gap:6px; margin-top:2px;">
             <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openSigModal('customer')">✍️ 서명 그리기</button>
@@ -1945,7 +1945,6 @@
       meta.systemModel = formatCombinedSystemModel(meta);
     }
 
-    // 엔지니어 직함/직급 제거하고 순수 "이름"만 추출 (예: "양성우 부장" 또는 "Sung-Woo Yang" -> 이름 추출)
     function extractEngineerName(fullText) {
       if (!fullText) return '';
       let cleaned = fullText.trim();
@@ -2314,7 +2313,7 @@
           systemModel: 'PM : PM2 / System : NP1200 / QCS800xA 5.1',
           workPeriod,
           division: 'AUPI/PP&f',
-          engineer: 'Kil-Dong Hong'
+          engineer: 'Engineer Namg'
         },
         workingItems: [
           '1. Troubleshooting'
@@ -3697,8 +3696,8 @@
         meta: {
           customerName: '',
           pmName: '',
-          systemDetail: 'QCS 800xA 6.1, WIS 7.5',
-          systemModel: 'System : QCS 800xA 6.1, WIS 7.5',
+          systemDetail: 'QCS 800xA 6.1',
+          systemModel: 'System : QCS 800xA 6.1',
           workPeriod: periodStr,
           division: reportData.meta.division || 'IAPI/Pulp&Paper',
           engineer: reportData.meta.engineer || '양성우 부장'
