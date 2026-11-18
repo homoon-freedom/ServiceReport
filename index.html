@@ -1,319 +1,3822 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LocalStorage eBook Manager Professional</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --p-width: 95vw; --p-height: 85vh; --bg-canvas: #1a1a1a; --page-bg: #fcfaf5; --text-color: #2c3e50; --font-size: 17px;
-            --line-color: color-mix(in srgb, var(--text-color), transparent 85%);
-        }
-        body { background: var(--bg-canvas); display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Pretendard', sans-serif; overflow: hidden; }
-        .main-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
-        
-        .book-viewport { width: var(--p-width); height: var(--p-height); position: relative; overflow: hidden; border-radius: 20px; box-shadow: 0 40px 100px rgba(0,0,0,0.6); background: var(--page-bg); transition: background 0.4s ease; touch-action: none; }
-        .nav-area { position: absolute; top: 0; height: 100%; width: 20%; z-index: 10; cursor: pointer; }
-        .prev-area { left: 0; }
-        .next-area { right: 0; }
-        
-        .book-container { display: flex; height: 100%; transition: transform 0.4s ease; }
-        .page { min-width: var(--p-width); height: 100%; padding: 10vh 10vw 8vh 10vw; box-sizing: border-box; position: relative; color: var(--text-color); }
-        .page-content { font-size: var(--font-size); line-height: 1.8; text-align: justify; word-break: break-all; white-space: pre-wrap; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Service Report Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- PDF 파일 직접 생성을 위한 라이브러리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --abb-red: #FF000F;
+      --primary: #1e293b;
+      --accent: #0f62fe;
+      --bg-app: #eef2f6;
+      --border-ui: #cbd5e1;
+      --border-doc: #333333;
+      --label-bg: #f4f6f8;
+    }
 
-        /* 스타일 규칙 */
-        .page-content i { color: #3498db; font-style: italic; opacity: 0.9; } 
-        .page-content i * { color: inherit !important; font-style: inherit !important; }
-        .page-content b { font-weight: bold; } 
-        .txt-gray { color: #999; font-size: 0.95em; } 
-        .txt-bold { font-weight: bold; }
-        .txt-list-line { font-weight: bold; font-size: 1.15em; color: #000; display: block; margin: 10px 0 5px 0; }
-        .txt-list-bold { font-weight: bold; display: block; margin: 5px 0; }
-        
-        .book-info { position: absolute; width: 80%; left: 10%; opacity: 0.7; font-size: 13px; z-index: 100; color: var(--text-color); display: flex; justify-content: space-between; align-items: center; }
-        .book-header { top: 3vh; padding-bottom: 8px; border-bottom: 1.5px solid var(--line-color); }
-        .book-footer { bottom: 2.5vh; padding-top: 8px; border-top: 1.5px solid var(--line-color); }
-        
-        #page-indicator { cursor: pointer; font-weight: bold; padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,0.05); }
-        
-        .bottom-menu { display: flex; gap: 5px; justify-content: center; width: 100%; flex-wrap: wrap; }
-        .bottom-btn { padding: 8px 14px; border-radius: 50px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-size: 12px; font-weight: bold; }
-        
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(700px, 90%); max-height: 85vh; background: white; padding: 25px; border-radius: 25px; z-index: 3000; display: none; color: #333; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); box-sizing: border-box; }
-        .btn-action { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        #library-modal { width: min(500px, 85%); }
-        #book-title { margin-bottom: 10px; padding: 15px; border-radius: 8px; border: 1px solid #ddd; width: 100%; box-sizing: border-box; font-size: 15px; font-weight: bold; }
-        #editor { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit; resize: none; font-size: 15px; line-height: 1.6; min-height: 350px; flex: 1; }
-        #temp-measurer { width: calc(var(--p-width) - 20vw); font-size: var(--font-size); line-height: 1.8; visibility: hidden; position: absolute; white-space: pre-wrap; word-break: break-all; }
-    </style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', 'Malgun Gothic', Arial, sans-serif;
+      background-color: var(--bg-app);
+      color: #111827;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 상단 툴바 */
+    .top-toolbar {
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 20;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-badge {
+      background: var(--abb-red);
+      color: #fff;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    .toolbar-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .doc-status-pill {
+      font-size: 11.5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .doc-status-pill.saved {
+      background: #064e3b;
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 7px 11px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      filter: brightness(1.07);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-dark {
+      background: #334155;
+      color: #f8fafc;
+    }
+
+    .btn-customer {
+      background: #0d9488;
+      color: #ffffff;
+    }
+
+    .btn-archive {
+      background: #4f46e5;
+      color: #ffffff;
+    }
+
+    .btn-save {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #1e293b;
+      border: 1px solid var(--border-ui);
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .btn-mail {
+      background: #059669;
+      color: #fff;
+      padding: 7px 13px;
+    }
+
+    .btn-pdf {
+      background: var(--abb-red);
+      color: #fff;
+      padding: 7px 13px;
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* 알림 배너 (토스트) */
+    .toast-banner {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      background: #0f172a;
+      color: #f8fafc;
+      border-left: 4px solid #10b981;
+      padding: 13px 18px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 430px;
+      z-index: 200;
+      display: none;
+    }
+
+    .toast-banner.show {
+      display: block;
+      animation: slideUp 0.2s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* 메인 분할 레이아웃 */
+    .app-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* 좌측 편집기 패널 */
+    .editor-pane {
+      width: 495px;
+      min-width: 360px;
+      max-width: 50vw;
+      background: #ffffff;
+      border-right: 1px solid var(--border-ui);
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+
+    .card.problem-card {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .card.email-card {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* 상단 고정(Sticky) 헤더 */
+    .sticky-pages-header {
+      position: sticky;
+      top: -16px;
+      z-index: 15;
+      background: #f8fafc;
+      margin: -14px -14px 10px -14px;
+      padding: 12px 14px 10px 14px;
+      border-bottom: 1px solid #cbd5e1;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .problem-card .card-header {
+      border-bottom-color: #fde68a;
+    }
+
+    .email-card .card-header {
+      border-bottom-color: #bbf7d0;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .keyword-inline-box {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-top: 2px;
+    }
+
+    .keyword-inline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .keyword-inline-header label {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="search"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fff;
+      color: #111827;
+    }
+
+    input[type="file"] {
+      max-width: 100%;
+      font-size: 12px;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus,
+    input[type="search"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
+    textarea {
+      resize: none !important;
+      overflow-y: hidden !important;
+      overflow-x: hidden !important;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-height: 54px;
+      line-height: 1.55;
+      display: block;
+    }
+
+    .helper-text {
+      font-size: 11.5px;
+      color: #475569;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .sys-model-split {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .inline-prefix-box {
+      display: flex;
+      align-items: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      background: #f1f5f9;
+      overflow: hidden;
+    }
+
+    .inline-prefix-box:focus-within {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
+    .inline-prefix-tag {
+      width: 72px;
+      flex-shrink: 0;
+      padding: 0 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1e293b;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .inline-prefix-box input {
+      border: none !important;
+      border-left: 1px solid #cbd5e1 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 6px 9px;
+      background: #ffffff;
+    }
+
+    .date-input-wrap {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .date-picker-btn {
+      position: relative;
+      width: 34px;
+      height: 33px;
+      flex-shrink: 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      overflow: hidden;
+    }
+
+    .date-picker-btn:hover {
+      background: #eff6ff;
+      border-color: #2563eb;
+    }
+
+    .date-picker-btn input[type="date"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: none;
+    }
+
+    .wi-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .page-editor-card {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: background-color 0.15s ease;
+    }
+
+    .page-editor-card.is-collapsed {
+      background: #f8fafc;
+    }
+
+    .page-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #eff6ff;
+      padding: 7px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border: 1px solid #bfdbfe;
+      cursor: pointer;
+      user-select: none;
+      gap: 6px;
+    }
+
+    .page-editor-card.is-collapsed .page-editor-header {
+      margin-bottom: 0;
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .page-editor-header:hover {
+      filter: brightness(0.98);
+    }
+
+    .page-header-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .page-title-label {
+      font-weight: 700;
+      font-size: 13px;
+      color: #1d4ed8;
+      white-space: nowrap;
+    }
+
+    .page-editor-card.is-collapsed .page-title-label {
+      color: #334155;
+    }
+
+    .page-summary-chip {
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 1px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-toggle-page {
+      background: #ffffff;
+      color: #1d4ed8;
+      border: 1px solid #93c5fd;
+    }
+
+    .page-editor-card.is-collapsed .btn-toggle-page {
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .page-editor-body {
+      display: block;
+    }
+
+    .page-editor-card.is-collapsed .page-editor-body {
+      display: none;
+    }
+
+    .block-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+
+    .block-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      gap: 6px;
+    }
+
+    .block-type-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .block-controls {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .paste-zone {
+      border: 1.5px dashed #94a3b8;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .paste-zone:hover,
+    .paste-zone:focus {
+      border-color: #2563eb;
+      background: #eff6ff;
+      outline: none;
+    }
+
+    .paste-zone.has-image {
+      border-style: solid;
+      border-color: #93c5fd;
+      background: #f8fafc;
+    }
+
+    .paste-zone p {
+      margin: 0;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .paste-zone small {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .editor-thumb-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px;
+      padding: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+    }
+
+    .editor-thumb-box img {
+      max-width: 100%;
+      max-height: 92px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+    }
+
+    .editor-thumb-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #0284c7;
+    }
+
+    .dual-slot-box {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 6px;
+      padding: 9px;
+    }
+
+    .dual-slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .dual-slot-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e40af;
+    }
+
+    .add-block-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding-top: 6px;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #94a3b8;
+    }
+
+    .preview-subbar {
+      background: #cbd5e1;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #94a3b8;
+    }
+
+    .preview-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .a4-page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      padding: 14mm 15mm 11mm 15mm;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      color: #111111;
+      flex-shrink: 0;
+    }
+
+    .a4-page.is-overflowing {
+      outline: 3px solid #ef4444;
+    }
+
+    .overflow-warning {
+      position: absolute;
+      top: 4px;
+      right: 15mm;
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      z-index: 5;
+    }
+
+    .doc-header {
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .doc-title-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .doc-main-title {
+      font-size: 21pt;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #111111;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .abb-logo-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 9.5pt;
+      border: 1.5px solid var(--border-doc);
+    }
+
+    .meta-table td {
+      border: 1px solid var(--border-doc);
+      padding: 5px 7px;
+      vertical-align: middle;
+      word-break: keep-all;
+    }
+
+    .meta-label {
+      background-color: var(--label-bg);
+      font-weight: 700;
+      font-size: 8.3pt;
+      color: #222222;
+      letter-spacing: 0.1px;
+      white-space: nowrap;
+    }
+
+    .meta-value {
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .meta-sys-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1.35;
+      font-size: 9pt;
+    }
+
+    .meta-period-value {
+      font-weight: 600;
+      color: #111111;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 9.2pt;
+    }
+
+    .meta-right {
+      text-align: center;
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .doc-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      overflow: hidden;
+    }
+
+    .working-items-box {
+      margin-bottom: 2px;
+      padding: 4px 2px;
+    }
+
+    .working-items-title {
+      font-weight: 700;
+      font-size: 10.5pt;
+      margin-bottom: 4px;
+    }
+
+    .working-items-list {
+      margin: 0;
+      padding-left: 16px;
+      list-style: none;
+      font-size: 10pt;
+      line-height: 1.7;
+    }
+
+    .problem-summary-box {
+      border: 1px solid #9ca3af;
+      border-left: 3.5px solid #374151;
+      background-color: #f8fafc;
+      padding: 7px 10px;
+      margin: 2px 0 4px 0;
+    }
+
+    .problem-summary-title {
+      font-weight: 700;
+      font-size: 10pt;
+      color: #111111;
+      margin-bottom: 3px;
+    }
+
+    .problem-summary-text {
+      font-size: 9.8pt;
+      line-height: 1.7;
+      color: #111111;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .doc-section-heading {
+      font-size: 11.5pt;
+      font-weight: 700;
+      margin: 8px 0 2px 0;
+      padding-left: 0;
+      line-height: 1.45;
+      color: #111111;
+    }
+
+    .doc-sub-heading {
+      font-size: 10.5pt;
+      font-weight: 700;
+      margin: 5px 0 2px 0;
+      padding-left: 14px;
+      line-height: 1.45;
+      color: #1f2937;
+    }
+
+    .doc-paragraph {
+      font-size: 10pt;
+      line-height: 1.72;
+      margin: 0;
+      white-space: pre-wrap;
+      padding-left: 26px;
+      color: #111111;
+    }
+
+    .doc-paragraph + .doc-paragraph {
+      margin-top: 10pt;
+    }
+
+    .doc-image-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 4px 0;
+    }
+
+    .doc-image-block img {
+      max-width: 96%;
+      object-fit: contain;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+    }
+
+    .doc-image-caption {
+      font-size: 9.8pt;
+      color: #111111;
+      margin-top: 5px;
+      text-align: center;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .doc-dual-image-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 4px 0;
+      width: 100%;
+    }
+
+    .dual-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .dual-col img {
+      max-width: 100%;
+      width: auto;
+      object-fit: contain;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+    }
+
+    .approval-section {
+      margin-top: auto;
+      padding-top: 10px;
+      flex-shrink: 0;
+    }
+
+    .approval-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      border: 1.5px solid var(--border-doc);
+    }
+
+    .approval-table th {
+      border: 1px solid var(--border-doc);
+      background-color: var(--label-bg);
+      padding: 5px 8px;
+      font-size: 9pt;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .approval-table td {
+      border: 1px solid var(--border-doc);
+      height: 62px;
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+
+    .approval-cell-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      gap: 6px;
+    }
+
+    .approval-name-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 0 4px;
+      overflow: hidden;
+    }
+
+    .approval-signer-text {
+      font-size: 13.5pt;
+      font-weight: 700;
+      color: #111111;
+      text-align: center;
+      line-height: 1.25;
+      word-break: keep-all;
+    }
+
+    .approval-sig-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .approval-sig-img {
+      max-height: 52px;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .doc-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 8.8pt;
+      color: #374151;
+      border-top: 1px solid #d1d5db;
+      padding-top: 5px;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .doc-footer-left {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .doc-footer-right {
+      font-weight: 700;
+      color: #111111;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      width: 380px;
+      max-width: 95vw;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .wide-modal-box {
+      width: 980px;
+      max-width: 96vw;
+      max-height: 89vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .wide-modal-header {
+      background: #0f172a;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .wide-modal-header h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wide-modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #f8fafc;
+    }
+
+    .wide-modal-footer {
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .customer-form-box {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .customer-form-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr 0.8fr 1.2fr 0.9fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .customer-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      font-size: 13px;
+    }
+
+    .customer-table th {
+      background: #e2e8f0;
+      color: #1e293b;
+      font-weight: 700;
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .customer-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #0f172a;
+    }
+
+    .customer-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .customer-table tr:hover td {
+      background: #f1f5f9;
+    }
+
+    .archive-view-tabs {
+      background: #e2e8f0;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #cbd5e1;
+      flex-wrap: wrap;
+    }
+
+    .view-tab-btn {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .view-tab-btn.active {
+      background: #1e3a8a;
+      color: #ffffff;
+      border-color: #1e3a8a;
+    }
+
+    .archive-filter-bar {
+      background: #f1f5f9;
+      padding: 10px 20px;
+      border-bottom: 1px solid #cbd5e1;
+      display: grid;
+      grid-template-columns: 120px 120px 145px 125px 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .archive-group-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1e3a8a;
+      background: #dbeafe;
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .archive-item-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      margin-bottom: 8px;
+    }
+
+    .archive-item-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+    }
+
+    .archive-item-card.is-active {
+      border: 2px solid #10b981;
+      background: #f0fdf4;
+    }
+
+    .archive-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .archive-item-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .badge-yq {
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .badge-pm {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-active {
+      background: #10b981;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .archive-cust-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .archive-meta-sub {
+      font-size: 12.5px;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    .archive-keywords-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .kw-chip {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+
+    .archive-wi-preview {
+      font-size: 12px;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .archive-item-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .sig-canvas {
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      background: #fff;
+      touch-action: none;
+      cursor: crosshair;
+      display: block;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 1024px) {
+      body {
+        height: auto;
+        overflow: auto;
+      }
+      .app-container {
+        flex-direction: column;
+        overflow: visible;
+      }
+      .editor-pane {
+        width: 100%;
+        max-width: 100%;
+        border-right: none;
+        border-bottom: 2px solid var(--border-ui);
+      }
+      .sticky-pages-header {
+        top: 0;
+      }
+      .preview-pane {
+        overflow: visible;
+      }
+      .preview-scroll {
+        overflow-x: auto;
+        align-items: flex-start;
+      }
+      .archive-filter-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+      .customer-form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        height: auto !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .top-toolbar,
+      .editor-pane,
+      .preview-subbar,
+      .overflow-warning,
+      .modal-backdrop,
+      .toast-banner {
+        display: none !important;
+      }
+
+      .app-container,
+      .preview-pane,
+      .preview-scroll {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        overflow: visible !important;
+      }
+
+      .a4-page {
+        width: 210mm !important;
+        height: 296.5mm !important;
+        margin: 0 !important;
+        padding: 14mm 15mm 11mm 15mm !important;
+        box-shadow: none !important;
+        outline: none !important;
+        border: none !important;
+        page-break-after: always;
+        break-after: page;
+        overflow: hidden !important;
+      }
+
+      .a4-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="main-wrapper">
-        <div class="book-viewport" id="swipe-area">
-            <div class="nav-area prev-area" onclick="movePage(-1)"></div>
-            <div class="nav-area next-area" onclick="movePage(1)"></div>
-            <div class="book-info book-header">
-                <span id="display-title">불러온 도서 없음</span>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <button onclick="changeFontSize(-1)">-</button>
-                    <span id="font-size-val">17</span>
-                    <button onclick="changeFontSize(1)">+</button>
-                    <button onclick="toggleBookmark()">🔖</button>
-                </div>
-            </div>
-            <div id="viewer-container" class="book-container"></div>
-            <div class="book-info book-footer">
-                <div onclick="goToPage(0)" style="cursor:pointer;">« 처음</div>
-                <div id="page-indicator" onclick="promptPageJump()">1 / 1</div>
-                <div onclick="goToPage(totalPages - 1)" style="cursor:pointer;">끝 »</div>
-            </div>
-        </div>
-        <div class="bottom-menu">
-            <button class="bottom-btn" onclick="openLibrary()">📚 서재</button>
-            <button class="bottom-btn" onclick="generateTOC()">📖 목차</button>
-            <button class="bottom-btn" onclick="openBookmarks()">🔖 북마크</button>
-            <button class="bottom-btn" onclick="openModal('setting-modal')">🎨 편집</button>
-        </div>
+  <datalist id="customerNameDatalist"></datalist>
+  <datalist id="customerEmailDatalist"></datalist>
+
+  <header class="top-toolbar">
+    <div class="toolbar-left">
+      <span class="toolbar-badge">ABB</span>
+      <span class="toolbar-title">Customer Service Report</span>
+      <span class="doc-status-pill" id="docStatusBadge">새 문서 (미저장)</span>
     </div>
-
-    <div id="toc-modal" class="modal"><h3>📖 목차</h3><div id="toc-list-container"></div><button class="btn-action" onclick="closeModal('toc-modal')">닫기</button></div>
-    <div id="library-modal" class="modal"><h3>📚 내 서재</h3><div id="book-list-container"></div><button class="btn-action" onclick="closeModal('library-modal')">닫기</button></div>
-    <div id="setting-modal" class="modal">
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:15px;"><h2>🎨 편집</h2><button onclick="prepareNewBook()" style="background:#27ae60; color:white; border:none; padding:10px; border-radius:5px;">+ 새 도서</button></div>
-        <input type="text" id="book-title" placeholder="제목">
-        <textarea id="editor" placeholder="내용..."></textarea>
-        <button class="btn-action" onclick="handleSave()">💾 저장</button>
-        <button class="btn-action" style="background:#95a5a6;" onclick="closeModal('setting-modal')">닫기</button>
+    <div class="toolbar-actions">
+      <button class="btn btn-customer" onclick="openCustomerModal()">🏢 고객사 관리 (<span id="customerCountBadge">0</span>)</button>
+      <button class="btn btn-archive" onclick="openArchiveModal()">📂 리포트 보관함 (<span id="archiveCountBadge">0</span>)</button>
+      <button class="btn btn-save" onclick="saveCurrentReportToArchive(false)">💾 리포트 저장</button>
+      <button class="btn btn-dark" onclick="resetNewReport()" title="빈 리포트 새로 작성">+ 새 작성</button>
+      <button class="btn btn-dark" onclick="loadSampleReport()" title="Moorim SP 샘플 불러오기">샘플</button>
+      <button class="btn btn-mail" id="btnSendMailTop" onclick="generatePdfAndSendEmail()">✉️ PDF & 메일</button>
+      <button class="btn btn-pdf" onclick="printToPdf()">📄 PDF 인쇄/저장</button>
     </div>
-    <div id="bookmark-modal" class="modal"><h3>🔖 북마크</h3><div id="bookmark-list-container"></div><button class="btn-action" onclick="closeModal('bookmark-modal')">닫기</button></div>
-    
-    <div id="temp-measurer"></div>
+  </header>
 
-    <script>
-        const SUPABASE_URL = 'https://bmdlawnmwkotxvoieuce.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtZGxhd25td2tvdHh2b2lldWNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMzg3NjgsImV4cCI6MjA5MzYxNDc2OH0.P3H0Gob_HFjCtz12b_KGEyC-tCWHijEyH-9SHPKAVDM';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <div class="app-container">
+    <aside class="editor-pane" id="editorPane">
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">1. 리포트 기본 정보 (전체 페이지 상단 공통)</h2>
+          <button class="btn btn-outline btn-sm" onclick="openCustomerModal()">🏢 고객사 등록/관리</button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>CUSTOMER NAME (고객사 선택/입력)</label>
+            <input type="text" id="inpCustomer" list="customerNameDatalist"
+                   oninput="handleCustomerNameInput(this.value)"
+                   onchange="handleCustomerNameInput(this.value)"
+                   placeholder="드롭다운 선택 또는 직접 입력" />
+          </div>
+          <div class="form-group">
+            <label>WORK PERIOD (달력 선택 / 기간 입력)</label>
+            <div class="date-input-wrap">
+              <input type="text" id="inpPeriod" oninput="updateMeta('workPeriod', this.value)" placeholder="예: 2026. 09. 21" />
+              <div class="date-picker-btn" title="달력에서 날짜 선택">
+                📅
+                <input type="date" id="inpPeriodCalendar" onchange="handleCalendarPick(this.value)" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>SYSTEM MODEL (PM 및 System 구분 입력)</label>
+            <div class="sys-model-split">
+              <div class="inline-prefix-box">
+                <span class="inline-prefix-tag">PM :</span>
+                <input type="text" id="inpPmName" oninput="updatePmOrSystem('pmName', this.value)" placeholder="예: PM52" />
+              </div>
+              <div class="inline-prefix-box">
+                <span class="inline-prefix-tag">System :</span>
+                <input type="text" id="inpSystemDetail" oninput="updatePmOrSystem('systemDetail', this.value)" placeholder="예: NP1200 / QCS800xA 5.1" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>DIVISION (사업부/팀)</label>
+            <input type="text" id="inpDivision" oninput="updateMeta('division', this.value)" placeholder="예: IAPI/Pulp&Paper" />
+          </div>
+          <div class="form-group">
+            <label>ENGINEER (담당 엔지니어)</label>
+            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="예: Sung-Woo Yang" />
+          </div>
 
-        let currentIndex = 0, totalPages = 1, currentFontSize = 17, currentBookId = null, currentBookmarks = [];
-        let tocMap = [];
+          <div class="form-group full keyword-inline-box">
+            <div class="keyword-inline-header">
+              <label for="inpKeywords">🏷️ 키워드 / 태그 (쉼표로 구분 · 보관함 검색용)</label>
+              <button type="button" class="btn btn-archive btn-sm" style="padding:2px 8px; font-size:11px;" onclick="openArchiveModal()">보관함 / 검색</button>
+            </div>
+            <input type="text" id="inpKeywords" oninput="updateClassification('keywords', this.value)" placeholder="예: WIS, 카메라오버홀, 초점교정, 평량센서" />
+          </div>
 
-        async function init() {
-            const savedSize = localStorage.getItem('eb_fontSize');
-            if(savedSize) { currentFontSize = parseInt(savedSize); applyFontSizeEffect(); }
-            const lastBookId = localStorage.getItem('eb_lastBookId');
-            const lastPage = parseInt(localStorage.getItem('eb_lastPage') || 0);
-            if(lastBookId) await loadBook(lastBookId, lastPage);
-            else renderBook();
-        }
+          <div class="form-group full" style="flex-direction:row; gap:8px; margin-top:2px;">
+            <button class="btn btn-save" style="flex:1; justify-content:center;" onclick="saveCurrentReportToArchive(false)">
+              💾 현재 분류로 저장
+            </button>
+            <button class="btn btn-outline" style="flex:1; justify-content:center;" onclick="saveCurrentReportToArchive(true)" title="기존 리포트를 덮어쓰지 않고 새 리포트 항목으로 복제 저장">
+              📑 새 리포트로 복제 저장
+            </button>
+          </div>
+        </div>
+      </section>
 
-        async function renderBook() {
-            return new Promise((resolve) => {
-                const raw = document.getElementById('editor').value || "내용을 입력하세요.";
-                const maxH = document.querySelector('.book-viewport').offsetHeight * 0.8;
-                const viewer = document.getElementById('viewer-container');
-                const temp = document.getElementById('temp-measurer');
-                
-                viewer.innerHTML = "";
-                temp.innerHTML = "";
-                tocMap = [];
-                let pCount = 0;
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">2. [Working Items] 작업 요약</h2>
+          <button class="btn btn-outline btn-sm" onclick="addWorkingItem()">+ 항목 추가</button>
+        </div>
+        <div id="workingItemsEditor"></div>
+      </section>
 
-                const lines = raw.split('\n');
-                let processedLines = [];
-                
-                lines.forEach(line => {
-                    if (line.trim().startsWith('{l}')) {
-                        tocMap.push({ title: line.replace('{l}', '').trim(), page: pCount });
-                    } else {
-                        processedLines.push(line);
-                    }
-                });
+      <section class="card problem-card">
+        <div class="card-header">
+          <h2 class="card-title">🚨 현장 발생 문제 현상 (Working Items 아래 표시)</h2>
+        </div>
+        <div class="form-group">
+          <label>리포트 표기 제목</label>
+          <input type="text" id="inpProblemTitle" oninput="updateProblemField('title', this.value)" placeholder="예: [현장 발생 문제 현상] 또는 [Problem Description]" />
+        </div>
+        <div class="form-group" style="margin-top:8px;">
+          <label>문제 현상 상세 내용 (비워두면 리포트에 표시되지 않음)</label>
+          <textarea id="inpProblemDesc" oninput="autoResizeTextarea(this); updateProblemField('description', this.value)" placeholder="현장에서 발생한 설비 이상 증상, 알람 내용, 고객사 요청 배경 등을 입력하세요."></textarea>
+        </div>
+      </section>
 
-                let processedHTML = processedLines.join('\n')
-                    .replace(/"([^"]*)"/g, '<i>"$1"</i>')
-                    .replace(/'([^']*)'/g, '<b>\'$1\'</b>')
-                    .replace(/\(([^0-9][^)]*)\)/g, '<span class="txt-gray">($1)</span>')
-                    .replace(/\[(.*?)\]/g, '<span class="txt-bold">$1</span>')
-                    .replace(/^(\d+\..*)$/gm, '<span class="txt-list-line">$1</span>')
-                    .replace(/^(\d+\).*)$/gm, '<span class="txt-list-bold">$1</span>');
+      <section class="card">
+        <div class="card-header sticky-pages-header">
+          <h2 class="card-title">3. 페이지별 점검 내용 & 사진</h2>
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="toggleAllPagesVisibility(false)" title="모든 페이지 펼치기">전체 펼치기</button>
+            <button class="btn btn-outline btn-sm" onclick="toggleAllPagesVisibility(true)" title="모든 페이지 숨기기">전체 숨기기</button>
+            <button class="btn btn-primary btn-sm" onclick="addPage()">+ 페이지 추가</button>
+          </div>
+        </div>
+        <div id="pagesEditor" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </section>
 
-                const sections = processedHTML.split('{p}');
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">4. 하단 승인란 (마지막 페이지)</h2>
+          <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:12px;">
+            <input type="checkbox" id="chkApproval" onchange="toggleApproval(this.checked)" />
+            승인란 표시
+          </label>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>CUSTOMER APPROVAL 표기</label>
+            <input type="text" id="inpCustSignText" oninput="updateApproval('customerText', this.value)" placeholder="공란 또는 서명자 성함" />
+          </div>
+          <div class="form-group">
+            <label>ENGINEER APPROVAL 표기</label>
+            <input type="text" id="inpEngSignText" oninput="updateApproval('engineerText', this.value)" placeholder="예: Sung-Woo Yang" />
+          </div>
+          <div class="form-group full" style="display:flex; gap:6px; margin-top:2px;">
+            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openSigModal('customer')">✍️ 서명 그리기</button>
+            <button class="btn btn-danger btn-sm" onclick="clearSig('customer')">지우기</button>
+            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openSigModal('engineer')">✍️ 서명 그리기</button>
+            <button class="btn btn-danger btn-sm" onclick="clearSig('engineer')">지우기</button>
+          </div>
+        </div>
+      </section>
 
-                sections.forEach((section, idx) => {
-                    if (idx > 0 && temp.innerHTML.trim() !== "") {
-                        addPage(temp.innerHTML);
-                        pCount++;
-                        temp.innerHTML = "";
-                    }
+      <section class="card email-card" id="emailSection">
+        <div class="card-header">
+          <h2 class="card-title">5. 이메일 발송 설정 (PDF 파일 생성 & 메일 연동)</h2>
+          <button class="btn btn-outline btn-sm" onclick="refreshDefaultEmailText()" title="기본 정보 기준으로 제목/본문 다시 채우기">문구 자동생성</button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>받는 사람 메일 주소 (To) *</label>
+            <input type="email" id="inpEmailTo" list="customerEmailDatalist"
+                   oninput="handleEmailToInput(this.value)"
+                   onchange="handleEmailToInput(this.value)"
+                   placeholder="드롭다운 선택 또는 직접 입력" />
+          </div>
+          <div class="form-group">
+            <label>참조 메일 주소 (CC, 선택)</label>
+            <input type="email" id="inpEmailCc" oninput="updateEmailField('cc', this.value)" placeholder="예: team@kr.abb.com" />
+          </div>
+          <div class="form-group full">
+            <label>메일 제목 (Subject)</label>
+            <input type="text" id="inpEmailSubject" oninput="updateEmailField('subject', this.value)" />
+          </div>
+          <div class="form-group full">
+            <label>메일 본문 (Body)</label>
+            <textarea id="inpEmailBody" oninput="autoResizeTextarea(this); updateEmailField('body', this.value)"></textarea>
+          </div>
+          <div class="form-group full">
+            <button class="btn btn-mail" id="btnSendMailBottom" style="width:100%; justify-content:center; padding:10px;" onclick="generatePdfAndSendEmail()">
+              ✉️ PDF 파일 저장 후 메일 앱 열기
+            </button>
+            <p class="helper-text" style="margin-top:4px;">
+              ※ 버튼 클릭 시 <strong><span id="previewPdfFilename">2026-09-21.MoorimSP.pdf</span></strong> 파일이 자동 저장되며, 기본 메일 앱이 실행됩니다.
+            </p>
+          </div>
+        </div>
+      </section>
 
-                    const sectionWrapper = document.createElement('div');
-                    sectionWrapper.innerHTML = section;
-                    const nodes = Array.from(sectionWrapper.childNodes);
+    </aside>
 
-                    nodes.forEach(node => {
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            const text = node.textContent;
-                            for (let i = 0; i < text.length; i++) {
-                                temp.innerHTML += text[i];
-                                if (temp.offsetHeight > maxH) {
-                                    const lastChar = temp.innerHTML.slice(-1);
-                                    temp.innerHTML = temp.innerHTML.slice(0, -1);
-                                    addPage(temp.innerHTML);
-                                    pCount++;
-                                    temp.innerHTML = lastChar;
-                                }
-                            }
-                        } else {
-                            const clone = node.cloneNode(true);
-                            temp.appendChild(clone);
-                            if (temp.offsetHeight > maxH) {
-                                temp.removeChild(clone);
-                                if (temp.innerHTML.trim() !== "") {
-                                    addPage(temp.innerHTML);
-                                    pCount++;
-                                }
-                                temp.innerHTML = "";
-                                temp.appendChild(clone);
-                            }
-                        }
-                    });
-                });
+    <main class="preview-pane">
+      <div class="preview-subbar">
+        <span>실시간 A4 인쇄 미리보기 (모든 페이지 상단 헤더 및 하단 푸터 자동 반영)</span>
+        <span id="pageCountBadge" style="font-weight:700;">총 4 페이지</span>
+      </div>
+      <div class="preview-scroll" id="previewContainer"></div>
+    </main>
+  </div>
 
-                if (temp.innerHTML.trim() !== "") {
-                    addPage(temp.innerHTML);
-                    pCount++;
-                }
+  <div class="modal-backdrop" id="customerModal">
+    <div class="modal-box wide-modal-box">
+      <div class="wide-modal-header">
+        <h3>🏢 고객사 정보 관리 (회사명 · 담당자 · 이메일 · 전화번호)</h3>
+        <button class="btn btn-dark btn-sm" onclick="closeCustomerModal()">✕ 닫기</button>
+      </div>
+      <div class="wide-modal-body">
+        <div class="customer-form-box">
+          <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:8px;" id="custFormModeTitle">
+            ➕ 신규 고객사 등록 (등록된 정보는 Customer Name 및 메일 주소 드롭다운에 자동 연동됩니다)
+          </div>
+          <input type="hidden" id="editCustId" value="" />
+          <div class="customer-form-grid">
+            <div class="form-group">
+              <label>회사이름 (Customer Name) *</label>
+              <input type="text" id="custCompanyInp" placeholder="예: 한솔제지 대전공장" />
+            </div>
+            <div class="form-group">
+              <label>담당자 이름</label>
+              <input type="text" id="custContactInp" placeholder="예: 신현" />
+            </div>
+            <div class="form-group">
+              <label>직급</label>
+              <input type="text" id="custTitleInp" placeholder="예: 차장" />
+            </div>
+            <div class="form-group">
+              <label>이메일 주소 (Email)</label>
+              <input type="email" id="custEmailInp" placeholder="예: hshin@hansol.com" />
+            </div>
+            <div class="form-group">
+              <label>전화번호 (Tel)</label>
+              <input type="tel" id="custPhoneInp" placeholder="예: 010-6488-7414" />
+            </div>
+            <div style="display:flex; gap:5px;">
+              <button class="btn btn-primary" onclick="saveCustomerRecord()" id="btnSaveCustomer">등록</button>
+              <button class="btn btn-outline" onclick="resetCustomerForm()" id="btnCancelCustomerEdit" style="display:none;">취소</button>
+            </div>
+          </div>
+        </div>
 
-                totalPages = pCount || 1;
-                document.getElementById('page-indicator').innerText = `${currentIndex + 1} / ${totalPages}`;
-                resolve();
-            });
-        }
+        <div style="overflow-x:auto;">
+          <table class="customer-table">
+            <thead>
+              <tr>
+                <th>회사이름</th>
+                <th>담당자 이름</th>
+                <th>직급</th>
+                <th>이메일 주소</th>
+                <th>전화번호</th>
+                <th style="width:170px; text-align:center;">관리 / 적용</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="wide-modal-footer">
+        <span class="helper-text">※ 등록한 고객사를 좌측 <strong>CUSTOMER NAME</strong>에서 선택하면 해당 담당자 이름 및 이메일 주소가 자동으로 채워집니다.</span>
+        <button class="btn btn-primary btn-sm" onclick="closeCustomerModal()">확인</button>
+      </div>
+    </div>
+  </div>
 
-        function addPage(content) {
-            const div = document.createElement('div');
-            div.className = 'page';
-            div.innerHTML = `<div class="page-content">${content}</div>`;
-            document.getElementById('viewer-container').appendChild(div);
-        }
+  <div class="modal-backdrop" id="archiveModal">
+    <div class="modal-box wide-modal-box">
+      <div class="wide-modal-header">
+        <h3>📂 서비스 리포트 보관함 (년도·분기 / 고객사 / PM / 키워드 검색)</h3>
+        <button class="btn btn-dark btn-sm" onclick="closeArchiveModal()">✕ 닫기</button>
+      </div>
+      <div class="archive-view-tabs">
+        <span style="font-size:12px; font-weight:700; color:#334155;">그룹 보기 기준:</span>
+        <button class="view-tab-btn active" id="tabGroup_YQ" onclick="setArchiveGroupMode('YQ')">📅 년도·분기별</button>
+        <button class="view-tab-btn" id="tabGroup_CUST" onclick="setArchiveGroupMode('CUST')">🏢 고객사별</button>
+        <button class="view-tab-btn" id="tabGroup_PM" onclick="setArchiveGroupMode('PM')">⚙️ PM별</button>
+      </div>
+      <div class="archive-filter-bar">
+        <select id="filterArchiveYear" onchange="renderArchiveList()">
+          <option value="ALL">전체 연도</option>
+        </select>
+        <select id="filterArchiveQuarter" onchange="renderArchiveList()">
+          <option value="ALL">전체 분기</option>
+          <option value="Q1">1분기 (Q1)</option>
+          <option value="Q2">2분기 (Q2)</option>
+          <option value="Q3">3분기 (Q3)</option>
+          <option value="Q4">4분기 (Q4)</option>
+        </select>
+        <select id="filterArchiveCustomer" onchange="renderArchiveList()">
+          <option value="ALL">전체 고객사</option>
+        </select>
+        <select id="filterArchivePm" onchange="renderArchiveList()">
+          <option value="ALL">전체 PM</option>
+        </select>
+        <input type="search" id="filterArchiveSearch" oninput="renderArchiveList()" placeholder="키워드, 고객사, PM, 설비, 점검 내용 통합 검색..." />
+        <button class="btn btn-outline btn-sm" onclick="resetArchiveFilters()">초기화</button>
+      </div>
+      <div class="wide-modal-body" id="archiveListContainer"></div>
+      <div class="wide-modal-footer">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportAllArchiveJson()">📤 전체 보관함 백업 (.json)</button>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('archiveImportInput').click()">📥 보관함 파일 불러오기 (.json)</button>
+          <input type="file" id="archiveImportInput" accept=".json" style="display:none" onchange="importArchiveJson(event)" />
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="closeArchiveModal()">확인</button>
+      </div>
+    </div>
+  </div>
 
-        function generateTOC() {
-            let tocHTML = tocMap.map(item => `
-                <div style="padding:15px; cursor:pointer; border-bottom:1px solid #eee;" 
-                     onclick="goToPage(${item.page}); closeModal('toc-modal');">
-                    📍 ${item.title} <span style="float:right; color:#999; font-size:12px;">p.${item.page + 1}</span>
-                </div>
-            `).join('');
-            document.getElementById('toc-list-container').innerHTML = tocHTML || "<div style='padding:20px; color:#999;'>목차가 없습니다.</div>";
-            openModal('toc-modal');
-        }
+  <div class="toast-banner" id="toastBanner"></div>
 
-        function updateSlider() {
-            const w = document.querySelector('.book-viewport').offsetWidth;
-            document.getElementById('viewer-container').style.transform = `translateX(${-currentIndex * w}px)`;
-            document.getElementById('page-indicator').innerText = `${currentIndex + 1} / ${totalPages}`;
-            localStorage.setItem('eb_lastPage', currentIndex);
-        }
+  <div class="modal-backdrop" id="sigModal">
+    <div class="modal-box">
+      <h3 style="margin:0 0 6px 0; font-size:15px;" id="sigModalTitle">전자 서명 입력</h3>
+      <p style="margin:0; font-size:12px; color:#64748b;">마우스 또는 터치펜으로 아래 영역에 서명하세요.</p>
+      <canvas id="sigCanvas" class="sig-canvas" width="340" height="140"></canvas>
+      <div style="display:flex; justify-content:space-between; gap:8px;">
+        <button class="btn btn-outline" onclick="resetSigCanvas()">초기화</button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline" onclick="closeSigModal()">취소</button>
+          <button class="btn btn-primary" onclick="saveSigCanvas()">서명 적용</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        function movePage(dir) {
-            let n = currentIndex + dir;
-            if (n >= 0 && n < totalPages) { currentIndex = n; updateSlider(); }
-        }
+  <script>
+    const DRAFT_STORAGE_KEY = 'abb_service_report_draft_v9';
+    const CUSTOMERS_STORAGE_KEY = 'abb_service_report_customers_v2';
+    const DB_NAME = 'ABB_ServiceReport_DB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'reports';
 
-        function goToPage(idx) { 
-            currentIndex = (idx >= totalPages) ? totalPages - 1 : idx;
-            updateSlider(); 
-        }
+    const QUARTER_LABELS = {
+      Q1: '1분기 (Q1)',
+      Q2: '2분기 (Q2)',
+      Q3: '3분기 (Q3)',
+      Q4: '4분기 (Q4)'
+    };
 
-        async function handleSave() {
-            const title = document.getElementById('book-title').value;
-            const content = document.getElementById('editor').value;
-            const data = { title, content, bookmarks: currentBookmarks };
-            if (currentBookId) await _supabase.from('ebooks').update(data).eq('id', currentBookId);
-            else {
-                const res = await _supabase.from('ebooks').insert([data]).select();
-                if (res.data) currentBookId = res.data[0].id;
-            }
-            alert("저장되었습니다.");
-            renderBook();
-        }
+    const ABB_LOGO_SVG = `
+      <svg width="86" height="32" viewBox="0 0 130 48" xmlns="http://www.w3.org/2000/svg" aria-label="ABB">
+        <g fill="#FF000F">
+          <polygon points="16,4 22,4 22,22 7,22"/>
+          <polygon points="24,4 30,4 39,22 24,22"/>
+          <polygon points="6,25 22,25 22,36 14,36 11,44 0,44"/>
+          <polygon points="24,25 40,25 46,44 35,44 32,36 24,36"/>
+          <rect x="50" y="4" width="13" height="18"/>
+          <path d="M65,4 H75 C81,4 85,8 85,13 C85,17 82,20 79,22 H65 Z"/>
+          <rect x="50" y="25" width="13" height="19"/>
+          <path d="M65,25 H81 C85,27 87,30 87,34 C87,40 82,44 75,44 H65 Z"/>
+          <rect x="92" y="4" width="13" height="18"/>
+          <path d="M107,4 H117 C123,4 127,8 127,13 C127,17 124,20 121,22 H107 Z"/>
+          <rect x="92" y="25" width="13" height="19"/>
+          <path d="M107,25 H123 C127,27 129,30 129,34 C129,40 124,44 117,44 H107 Z"/>
+        </g>
+      </svg>
+    `;
 
-        async function loadBook(id, page = 0) {
-            const { data } = await _supabase.from('ebooks').select('*').eq('id', id).single();
-            if (data) {
-                currentBookId = data.id;
-                localStorage.setItem('eb_lastBookId', id);
-                document.getElementById('book-title').value = data.title;
-                document.getElementById('editor').value = data.content;
-                currentBookmarks = data.bookmarks || [];
-                document.getElementById('display-title').innerText = data.title;
-                await renderBook();
-                currentIndex = page < totalPages ? page : 0;
-                updateSlider();
-            }
-        }
+    function autoResizeTextarea(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      const minH = 54;
+      const nextH = Math.max(el.scrollHeight, minH);
+      el.style.height = nextH + 'px';
+    }
 
-        async function openLibrary() { 
-            openModal('library-modal'); 
-            const { data } = await _supabase.from('ebooks').select('id, title');
-            document.getElementById('book-list-container').innerHTML = data.map(b => `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #eee;">
-                    <div style="cursor:pointer; flex:1;" onclick="loadBook('${b.id}'); closeModal('library-modal');">📘 ${b.title}</div>
-                    <button onclick="deleteBook('${b.id}', '${b.title}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px;">삭제</button>
-                </div>
-            `).join('');
-        }
-
-        async function deleteBook(id, title) {
-            if (!confirm(`'${title}'을 삭제하시겠습니까?`)) return;
-            await _supabase.from('ebooks').delete().eq('id', id);
-            if (currentBookId === id) location.reload();
-            else openLibrary();
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'block'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
-        function applyFontSizeEffect() { 
-            const size = currentFontSize + 'px';
-            document.documentElement.style.setProperty('--font-size', size); 
-            document.getElementById('font-size-val').innerText = currentFontSize;
-        }
-
-        function changeFontSize(d) { 
-            currentFontSize += d; 
-            localStorage.setItem('eb_fontSize', currentFontSize);
-            applyFontSizeEffect(); 
-            renderBook().then(updateSlider); 
-        }
-
-        function prepareNewBook() { currentBookId = null; document.getElementById('book-title').value = ""; document.getElementById('editor').value = ""; renderBook(); }
-        function toggleBookmark() { 
-            if(currentBookmarks.includes(currentIndex)) currentBookmarks = currentBookmarks.filter(v => v !== currentIndex); 
-            else currentBookmarks.push(currentIndex); 
-            handleSave(); 
-        }
-
-        function promptPageJump() { const p = prompt("이동할 페이지:"); if(p) { currentIndex = parseInt(p)-1; updateSlider(); } }
-        
-        function openBookmarks() {
-            document.getElementById('bookmark-list-container').innerHTML = currentBookmarks.map(p => `
-                <div style="padding:15px; border-bottom:1px solid #eee; cursor:pointer;" onclick="goToPage(${p}); closeModal('bookmark-modal');">🔖 페이지 ${p+1}</div>
-            `).join('') || "북마크가 없습니다.";
-            openModal('bookmark-modal');
-        }
-
-        let startX = 0;
-        document.getElementById('swipe-area').addEventListener('touchstart', e => startX = e.touches[0].clientX);
-        document.getElementById('swipe-area').addEventListener('touchend', e => {
-            const diff = e.changedTouches[0].clientX - startX;
-            if (Math.abs(diff) > 50) diff > 0 ? movePage(-1) : movePage(1);
+    function autoResizeAllTextareas() {
+      requestAnimationFrame(() => {
+        document.querySelectorAll('#editorPane textarea').forEach(ta => {
+          autoResizeTextarea(ta);
         });
+      });
+    }
 
-        window.onload = init;
-    </script>
+    let memoryFallbackArchive = [];
+
+    function openReportDB() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error('IndexedDB not supported'));
+          return;
+        }
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'reportId' });
+            store.createIndex('year', 'year', { unique: false });
+            store.createIndex('quarter', 'quarter', { unique: false });
+          }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    async function dbGetAllReports() {
+      try {
+        const db = await openReportDB();
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, 'readonly');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        return memoryFallbackArchive;
+      }
+    }
+
+    async function dbPutReport(reportObj) {
+      try {
+        const db = await openReportDB();
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.put(reportObj);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        const idx = memoryFallbackArchive.findIndex(r => r.reportId === reportObj.reportId);
+        if (idx >= 0) memoryFallbackArchive[idx] = reportObj;
+        else memoryFallbackArchive.push(reportObj);
+        return true;
+      }
+    }
+
+    async function dbDeleteReport(reportId) {
+      try {
+        const db = await openReportDB();
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.delete(reportId);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        memoryFallbackArchive = memoryFallbackArchive.filter(r => r.reportId !== reportId);
+        return true;
+      }
+    }
+
+    function uid(prefix = 'rep_') {
+      return prefix + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function formatCombinedSystemModel(meta) {
+      if (!meta) return '';
+      const pm = (meta.pmName || '').trim();
+      const sys = (meta.systemDetail || '').trim();
+      if (pm && sys) return `PM : ${pm} / System : ${sys}`;
+      if (pm) return `PM : ${pm}`;
+      if (sys) return `System : ${sys}`;
+      return (meta.systemModel || '').trim();
+    }
+
+    function migrateLegacySystemModel(meta) {
+      if (!meta) return;
+      if (meta.pmName === undefined && meta.systemDetail === undefined) {
+        const raw = (meta.systemModel || '').trim();
+        const pmMatch = raw.match(/^(?:PM\s*[:\-]?\s*)?([A-Za-z0-9_-]*PM[A-Za-z0-9_-]*)\s*\/\s*(?:System\s*[:\-]?\s*)?(.+)$/i);
+        if (pmMatch) {
+          meta.pmName = pmMatch[1].trim();
+          meta.systemDetail = pmMatch[2].trim();
+        } else {
+          meta.pmName = '';
+          meta.systemDetail = raw;
+        }
+      }
+      meta.systemModel = formatCombinedSystemModel(meta);
+    }
+
+    function extractEngineerName(fullText) {
+      if (!fullText) return '';
+      let cleaned = fullText.trim();
+      cleaned = cleaned.replace(/\s+(부장|차장|과장|대리|사원|연구원|엔지니어|팀장|파트장|직장|반장|전무|상무|이사|대표).*$/i, '');
+      return cleaned.trim();
+    }
+
+    function inferYearAndQuarter(workPeriodStr) {
+      const str = String(workPeriodStr || '');
+      const match = str.match(/(20\d{2})\D+(\d{1,2})/);
+      if (match) {
+        const year = match[1];
+        const month = parseInt(match[2], 10);
+        if (month >= 1 && month <= 12) {
+          let quarter = 'Q1';
+          if (month >= 1 && month <= 3) quarter = 'Q1';
+          else if (month >= 4 && month <= 6) quarter = 'Q2';
+          else if (month >= 7 && month <= 9) quarter = 'Q3';
+          else if (month >= 10 && month <= 12) quarter = 'Q4';
+          return { year, quarter };
+        }
+      }
+      const now = new Date();
+      const q = 'Q' + (Math.floor(now.getMonth() / 3) + 1);
+      return { year: String(now.getFullYear()), quarter: q };
+    }
+
+    function syncCalendarInputFromText(periodStr) {
+      const calEl = document.getElementById('inpPeriodCalendar');
+      if (!calEl) return;
+      const match = String(periodStr || '').match(/(20\d{2})\D+(\d{1,2})\D+(\d{1,2})/);
+      if (match) {
+        const yyyy = match[1];
+        const mm = match[2].padStart(2, '0');
+        const dd = match[3].padStart(2, '0');
+        calEl.value = `${yyyy}-${mm}-${dd}`;
+      }
+    }
+
+    function handleCalendarPick(isoDateStr) {
+      if (!isoDateStr) return;
+      const parts = isoDateStr.split('-');
+      if (parts.length === 3) {
+        const formatted = `${parts[0]}. ${parts[1]}. ${parts[2]}`;
+        document.getElementById('inpPeriod').value = formatted;
+        updateMeta('workPeriod', formatted);
+      }
+    }
+
+    let customerDirectory = loadCustomerDirectory();
+
+    function loadCustomerDirectory() {
+      try {
+        const raw = localStorage.getItem(CUSTOMERS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [
+        {
+          id: 'cust_default_1',
+          companyName: '한솔제지 대전공장',
+          contactName: '신현',
+          title: '차장',
+          email: 'hshin@hansol.com',
+          phone: '010-6488-7414'
+        },
+        {
+          id: 'cust_default_2',
+          companyName: '한솔제지 천안공장',
+          contactName: '조성국',
+          title: '',
+          email: 'sungkuk71@hansol.com',
+          phone: '010-4362-3346'
+        }
+      ];
+    }
+
+    function saveCustomerDirectory() {
+      try {
+        localStorage.setItem(CUSTOMERS_STORAGE_KEY, JSON.stringify(customerDirectory));
+      } catch (e) {}
+      refreshCustomerDatalists();
+      updateCustomerCountBadge();
+    }
+
+    function updateCustomerCountBadge() {
+      const badge = document.getElementById('customerCountBadge');
+      if (badge) badge.textContent = customerDirectory.length;
+    }
+
+    function refreshCustomerDatalists() {
+      const nameListEl = document.getElementById('customerNameDatalist');
+      const emailListEl = document.getElementById('customerEmailDatalist');
+      if (!nameListEl || !emailListEl) return;
+
+      const uniqueCompanies = Array.from(new Set(customerDirectory.map(c => c.companyName).filter(Boolean)));
+      nameListEl.innerHTML = uniqueCompanies.map(comp => {
+        const contacts = customerDirectory
+          .filter(c => c.companyName === comp)
+          .map(c => [c.contactName, c.title, c.email].filter(Boolean).join(' / '))
+          .join(', ');
+        return `<option value="${escapeHtml(comp)}">${escapeHtml(contacts)}</option>`;
+      }).join('');
+
+      emailListEl.innerHTML = customerDirectory
+        .filter(c => c.email)
+        .map(c => {
+          const label = [c.companyName, c.contactName ? c.contactName + (c.title ? ' ' + c.title : '') : '', c.phone].filter(Boolean).join(' · ');
+          return `<option value="${escapeHtml(c.email)}">${escapeHtml(label)}</option>`;
+        }).join('');
+    }
+
+    function handleCustomerNameInput(val) {
+      updateMeta('customerName', val);
+      const trimmed = (val || '').trim().toLowerCase();
+      if (!trimmed) return;
+      const matched = customerDirectory.find(c => (c.companyName || '').trim().toLowerCase() === trimmed);
+      if (matched) {
+        if (matched.email) {
+          reportData.email.to = matched.email;
+          const emailInp = document.getElementById('inpEmailTo');
+          if (emailInp) emailInp.value = matched.email;
+        }
+        if (matched.contactName) {
+          reportData.approval.customerText = matched.contactName;
+          const signTextInp = document.getElementById('inpCustSignText');
+          if (signTextInp) signTextInp.value = matched.contactName;
+        }
+        saveDraft();
+        renderEditor();
+        renderPreview();
+      }
+    }
+
+    function handleEmailToInput(val) {
+      updateEmailField('to', val);
+      const trimmed = (val || '').trim().toLowerCase();
+      if (!trimmed) return;
+      const matched = customerDirectory.find(c => (c.email || '').trim().toLowerCase() === trimmed);
+      if (matched && matched.companyName && !reportData.meta.customerName) {
+        document.getElementById('inpCustomer').value = matched.companyName;
+        updateMeta('customerName', matched.companyName);
+      }
+    }
+
+    function openCustomerModal() {
+      resetCustomerForm();
+      renderCustomerTable();
+      document.getElementById('customerModal').classList.add('open');
+    }
+
+    function closeCustomerModal() {
+      document.getElementById('customerModal').classList.remove('open');
+    }
+
+    function resetCustomerForm() {
+      document.getElementById('editCustId').value = '';
+      document.getElementById('custCompanyInp').value = '';
+      document.getElementById('custContactInp').value = '';
+      document.getElementById('custTitleInp').value = '';
+      document.getElementById('custEmailInp').value = '';
+      document.getElementById('custPhoneInp').value = '';
+      document.getElementById('custFormModeTitle').textContent =
+        '➕ 신규 고객사 등록 (등록된 정보는 Customer Name 및 메일 주소 드롭다운에 자동 연동됩니다)';
+      document.getElementById('btnSaveCustomer').textContent = '등록';
+      document.getElementById('btnCancelCustomerEdit').style.display = 'none';
+    }
+
+    function saveCustomerRecord() {
+      const editId = document.getElementById('editCustId').value;
+      const companyName = document.getElementById('custCompanyInp').value.trim();
+      const contactName = document.getElementById('custContactInp').value.trim();
+      const title = document.getElementById('custTitleInp').value.trim();
+      const email = document.getElementById('custEmailInp').value.trim();
+      const phone = document.getElementById('custPhoneInp').value.trim();
+
+      if (!companyName) {
+        document.getElementById('custCompanyInp').focus();
+        showToast('⚠️ <strong>회사이름</strong>을 입력해 주세요.', 3500);
+        return;
+      }
+
+      if (editId) {
+        const idx = customerDirectory.findIndex(c => c.id === editId);
+        if (idx >= 0) {
+          customerDirectory[idx] = { id: editId, companyName, contactName, title, email, phone };
+        }
+        showToast(`✅ <strong>${escapeHtml(companyName)}</strong> 고객 정보가 수정되었습니다.`, 3500);
+      } else {
+        customerDirectory.push({
+          id: uid('cust_'),
+          companyName,
+          contactName,
+          title,
+          email,
+          phone
+        });
+        showToast(`✅ <strong>${escapeHtml(companyName)}</strong> 고객 정보가 등록되었습니다.`, 3500);
+      }
+
+      saveCustomerDirectory();
+      resetCustomerForm();
+      renderCustomerTable();
+    }
+
+    function editCustomerRecord(id) {
+      const found = customerDirectory.find(c => c.id === id);
+      if (!found) return;
+      document.getElementById('editCustId').value = found.id;
+      document.getElementById('custCompanyInp').value = found.companyName || '';
+      document.getElementById('custContactInp').value = found.contactName || '';
+      document.getElementById('custTitleInp').value = found.title || '';
+      document.getElementById('custEmailInp').value = found.email || '';
+      document.getElementById('custPhoneInp').value = found.phone || '';
+      document.getElementById('custFormModeTitle').textContent = `✏️ 고객사 정보 수정 (${found.companyName})`;
+      document.getElementById('btnSaveCustomer').textContent = '수정 저장';
+      document.getElementById('btnCancelCustomerEdit').style.display = 'inline-flex';
+    }
+
+    function deleteCustomerRecord(id) {
+      if (!confirm('이 고객사 정보를 삭제하시겠습니까?')) return;
+      customerDirectory = customerDirectory.filter(c => c.id !== id);
+      saveCustomerDirectory();
+      renderCustomerTable();
+      showToast('🗑️ 고객사 정보가 삭제되었습니다.', 3000);
+    }
+
+    function applyCustomerToCurrentReport(id) {
+      const found = customerDirectory.find(c => c.id === id);
+      if (!found) return;
+      document.getElementById('inpCustomer').value = found.companyName || '';
+      updateMeta('customerName', found.companyName || '');
+      if (found.email) {
+        reportData.email.to = found.email;
+        document.getElementById('inpEmailTo').value = found.email;
+      }
+      if (found.contactName) {
+        reportData.approval.customerText = found.contactName;
+        document.getElementById('inpCustSignText').value = found.contactName;
+      }
+      saveDraft();
+      renderEditor();
+      renderPreview();
+      closeCustomerModal();
+      showToast(`✅ 현재 리포트에 <strong>${escapeHtml(found.companyName)}</strong> 정보가 적용되었습니다.`, 3500);
+    }
+
+    function renderCustomerTable() {
+      const tbody = document.getElementById('customerTableBody');
+      if (!tbody) return;
+      if (customerDirectory.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:28px; color:#64748b;">
+              등록된 고객사가 없습니다. 위 입력란에서 고객사 정보를 등록해 주세요.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      tbody.innerHTML = customerDirectory.map(c => `
+        <tr>
+          <td><strong>${escapeHtml(c.companyName)}</strong></td>
+          <td>${escapeHtml(c.contactName || '-')}</td>
+          <td>${escapeHtml(c.title || '-')}</td>
+          <td>${escapeHtml(c.email || '-')}</td>
+          <td>${escapeHtml(c.phone || '-')}</td>
+          <td style="text-align:center; white-space:nowrap;">
+            <button class="btn btn-primary btn-sm" onclick="applyCustomerToCurrentReport('${c.id}')" title="현재 작성 중인 리포트에 적용">선택</button>
+            <button class="btn btn-outline btn-sm" onclick="editCustomerRecord('${c.id}')">수정</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCustomerRecord('${c.id}')">삭제</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function makePlaceholderDiagram(title, subtitle, type) {
+      let inner = '';
+      if (type === 'wave1') {
+        inner = `
+          <line x1="30" y1="45" x2="570" y2="45" stroke="#9ca3af" stroke-width="1.2"/>
+          <polyline points="30,45 260,45 263,165 266,45 450,45 458,145 475,130 490,45 515,45 523,135 535,45 570,45" fill="none" stroke="#374151" stroke-width="1.5"/>
+        `;
+      } else if (type === 'wave2') {
+        inner = `
+          <line x1="30" y1="45" x2="570" y2="45" stroke="#9ca3af" stroke-width="1.2"/>
+          <polyline points="30,45 280,45 283,170 286,45 570,45" fill="none" stroke="#374151" stroke-width="1.5"/>
+        `;
+      } else if (type === 'wave3') {
+        inner = `
+          <line x1="30" y1="45" x2="570" y2="45" stroke="#9ca3af" stroke-width="1.2"/>
+          <polyline points="30,175 40,45 340,45 343,155 346,45 410,45 414,95 418,45 460,45 475,85 495,60 510,80 520,45 570,45" fill="none" stroke="#374151" stroke-width="1.5"/>
+        `;
+      } else {
+        inner = `
+          <rect x="150" y="38" width="300" height="125" rx="10" fill="#1f2937"/>
+          <circle cx="300" cy="100" r="44" fill="#374151" stroke="#9ca3af" stroke-width="4"/>
+          <circle cx="300" cy="100" r="24" fill="#111827"/>
+          <text x="300" y="105" text-anchor="middle" fill="#e5e7eb" font-size="13" font-family="sans-serif">OPTICAL / CAMERA UNIT</text>
+        `;
+      }
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200">
+          <rect width="600" height="200" fill="#f8fafc"/>
+          <rect x="10" y="10" width="580" height="180" fill="#ffffff" stroke="#cbd5e1"/>
+          <text x="300" y="30" text-anchor="middle" fill="#111827" font-size="15" font-weight="bold" font-family="sans-serif">${title}</text>
+          ${inner}
+          <text x="300" y="182" text-anchor="middle" fill="#64748b" font-size="11" font-family="sans-serif">${subtitle}</text>
+        </svg>
+      `;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    function buildDefaultEmailSubject(meta) {
+      const cust = meta.customerName || '고객사';
+      const period = meta.workPeriod || '';
+      const sys = formatCombinedSystemModel(meta);
+      return `[ABB Service Report] ${cust}${period ? ' (' + period + ')' : ''}${sys ? ' - ' + sys : ''}`;
+    }
+
+    function buildDefaultEmailBody(data) {
+      const m = data.meta;
+      const sysDisplay = formatCombinedSystemModel(m);
+      const itemsText = (data.workingItems || [])
+        .filter(item => item.trim())
+        .join('\n');
+      return [
+        `안녕하세요, ABB ${m.division || ''} ${m.engineer || ''}입니다.`,
+        ``,
+        `${m.workPeriod || ''} 진행된 ${m.customerName || '귀사'} (${sysDisplay}) 서비스 점검 리포트를 송부드립니다.`,
+        itemsText ? `\n[Working Items]\n${itemsText}` : '',
+        `\n상세 점검 내역은 첨부된 PDF 리포트를 확인해 주시기 바랍니다.`,
+        `감사합니다.`,
+        ``,
+        `${m.engineer || ''}`,
+        `ABB ${m.division || ''}`
+      ].filter(line => line !== null).join('\n');
+    }
+
+    function getSampleData() {
+      const workPeriod = '2026. 09. 21';
+      const inferred = inferYearAndQuarter(workPeriod);
+      const base = {
+        reportId: 'sample_moorimsp_2026_q3',
+        isSavedInArchive: false,
+        year: inferred.year,
+        quarter: inferred.quarter,
+        keywords: 'WIS, 카메라오버홀, 초점교정, 평량센서, AIS',
+        updatedAt: new Date().toISOString(),
+        meta: {
+          customerName: '한솔제지 대전공장',
+          pmName: 'PM2',
+          systemDetail: 'QCS 800xA 6.1, WIS 7.5',
+          systemModel: 'PM : PM2 / System : QCS 800xA 6.1, WIS 7.5',
+          workPeriod,
+          division: 'IAPI/Pulp&Paper',
+          engineer: '양성우 부장'
+        },
+        workingItems: [
+          '1. PM2 WIS Service.'
+        ],
+        problemStatement: {
+          title: '[현장 발생 문제 현상]',
+          description: '정기 보수 기간 중 WIS Camera 렌즈 오염 및 초점 편차로 인한 결함 검출 감도 저하 예방 점검 요청.'
+        },
+        approval: {
+          enabled: true,
+          customerText: '신현',
+          engineerText: '양성우',
+          customerSig: '',
+          engineerSig: ''
+        },
+        email: {
+          to: 'hshin@hansol.com',
+          cc: '',
+          subject: '',
+          body: '',
+          customEdited: false
+        },
+        pages: [
+          {
+            id: 'p1',
+            collapsed: true,
+            blocks: [
+              { id: 'b1', type: 'heading', text: '1. WIS 점검.' },
+              { id: 'b2', type: 'paragraph', text: '오랫동안 점검하지 않아 이번 보수 때 Camera Overhaul 작업을 실시하였다.' },
+              {
+                id: 'b3',
+                type: 'image',
+                src: makePlaceholderDiagram('PENTAX 50 Lens Setting (Before)', '[샘플 이미지] 클릭 후 Ctrl+V 또는 파일 업로드로 현장 사진 교체', 'lens'),
+                height: 205,
+                caption: '렌즈 분해 청소 전 Setting 값을 기록한다.'
+              },
+              {
+                id: 'b4',
+                type: 'image',
+                src: makePlaceholderDiagram('Camera Lens & Filter Disassembly', '[샘플 이미지] 분해 전 상태 사진 업로드 영역', 'lens'),
+                height: 205,
+                caption: ''
+              }
+            ]
+          },
+          {
+            id: 'p2',
+            collapsed: true,
+            blocks: [
+              {
+                id: 'b5',
+                type: 'image',
+                src: makePlaceholderDiagram('Cleaned Camera Lens & Filter', '[샘플 이미지] 분해 청소 후 사진 업로드 영역', 'lens'),
+                height: 230,
+                caption: '위와 같이 분해 청소를 실시하였다.'
+              },
+              { id: 'b6', type: 'subheading', text: 'Camera Focusing.' },
+              {
+                id: 'b7',
+                type: 'image',
+                src: makePlaceholderDiagram('focus = 40  video = 1505', 'Camera 2 교정 전 파형 캡처 이미지 영역', 'wave1'),
+                height: 230,
+                caption: 'Camera 2 교정 전.'
+              }
+            ]
+          },
+          {
+            id: 'p3',
+            collapsed: true,
+            blocks: [
+              {
+                id: 'b8',
+                type: 'image',
+                src: makePlaceholderDiagram('focus = 7  video = 1524', 'Camera 2 교정 후 파형 캡처 이미지 영역', 'wave2'),
+                height: 245,
+                caption: 'Camera 2 교정 후'
+              },
+              {
+                id: 'b9',
+                type: 'image',
+                src: makePlaceholderDiagram('focus = 68  video = 1369', 'Camera 1 교정 전 파형 캡처 이미지 영역', 'wave3'),
+                height: 245,
+                caption: 'Camera 1 교정 전.'
+              }
+            ]
+          },
+          {
+            id: 'p4',
+            collapsed: true,
+            blocks: [
+              {
+                id: 'b10',
+                type: 'image',
+                src: makePlaceholderDiagram('focus = 68  video = 1367', 'Camera 1 교정 후 파형 캡처 이미지 영역', 'wave3'),
+                height: 255,
+                caption: 'Camera 1 교정 후.'
+              },
+              { id: 'b11', type: 'paragraph', text: 'Camera 2번은 크게 변화가 없지만 Camera 1번은 개선이 되었다.' },
+              { id: 'b12', type: 'heading', text: '2. QCS 점검.' },
+              {
+                id: 'b13',
+                type: 'paragraph',
+                text: '평량 센서의 방사선 세기인 AIS 값이 4.4 정도 나오고 있었는데 반감기는 약 2년 정도 가 남은 것으로 사료된다.\n그외 다른 Sensor 들도 정상 값을 보여 주었다.'
+              }
+            ]
+          }
+        ]
+      };
+      base.email.subject = buildDefaultEmailSubject(base.meta);
+      base.email.body = buildDefaultEmailBody(base);
+      return base;
+    }
+
+    let reportData = loadInitialData();
+
+    function loadInitialData() {
+      try {
+        const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (!parsed.reportId) parsed.reportId = uid();
+          const inferred = inferYearAndQuarter(parsed.meta && parsed.meta.workPeriod);
+          if (!parsed.year) parsed.year = inferred.year;
+          if (!parsed.quarter) parsed.quarter = inferred.quarter;
+          if (parsed.keywords === undefined) parsed.keywords = '';
+          migrateLegacySystemModel(parsed.meta);
+          if (Array.isArray(parsed.pages)) {
+            parsed.pages.forEach(p => {
+              if (p.collapsed === undefined) p.collapsed = true;
+            });
+          }
+          if (!parsed.problemStatement) {
+            parsed.problemStatement = {
+              title: '[현장 발생 문제 현상]',
+              description: ''
+            };
+          }
+          if (!parsed.approval) {
+            parsed.approval = {
+              enabled: true,
+              customerText: '',
+              engineerText: '',
+              customerSig: '',
+              engineerSig: ''
+            };
+          }
+          if (!parsed.email) {
+            parsed.email = {
+              to: '',
+              cc: '',
+              subject: buildDefaultEmailSubject(parsed.meta),
+              body: buildDefaultEmailBody(parsed),
+              customEdited: false
+            };
+          }
+          return parsed;
+        }
+      } catch (e) {}
+      return getSampleData();
+    }
+
+    function saveDraft() {
+      try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(reportData));
+      } catch (e) {}
+      updateDocStatusBadge();
+    }
+
+    let toastTimer = null;
+    function showToast(htmlMsg, duration = 5000) {
+      const el = document.getElementById('toastBanner');
+      el.innerHTML = htmlMsg;
+      el.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('show');
+      }, duration);
+    }
+
+    function updateDocStatusBadge() {
+      const badge = document.getElementById('docStatusBadge');
+      if (!badge) return;
+      const qLabel = QUARTER_LABELS[reportData.quarter] || reportData.quarter;
+      const cust = reportData.meta.customerName || '고객사 미지정';
+      const pm = (reportData.meta.pmName || '').trim();
+      const pmTag = pm ? ` · ${pm}` : '';
+      if (reportData.isSavedInArchive) {
+        badge.className = 'doc-status-pill saved';
+        badge.textContent = `보관됨: ${reportData.year}년 ${qLabel} · ${cust}${pmTag}`;
+      } else {
+        badge.className = 'doc-status-pill';
+        badge.textContent = `작성 중 (${reportData.year}년 ${qLabel} · ${cust}${pmTag} · 미저장)`;
+      }
+    }
+
+    async function updateArchiveCountBadge() {
+      const list = await dbGetAllReports();
+      const badge = document.getElementById('archiveCountBadge');
+      if (badge) badge.textContent = list.length;
+    }
+
+    let archiveGroupMode = 'YQ';
+
+    function updateClassification(field, value) {
+      reportData[field] = value;
+      saveDraft();
+    }
+
+    async function saveCurrentReportToArchive(saveAsNewCopy = false) {
+      const custName = (reportData.meta.customerName || '').trim();
+      if (!custName) {
+        const custInp = document.getElementById('inpCustomer');
+        custInp.focus();
+        showToast('⚠️ 저장하기 전에 <strong>CUSTOMER NAME (고객사)</strong>을 입력해 주세요.', 4000);
+        return;
+      }
+
+      if (saveAsNewCopy || !reportData.reportId) {
+        reportData.reportId = uid();
+      }
+
+      const inferred = inferYearAndQuarter(reportData.meta.workPeriod);
+      reportData.year = inferred.year;
+      reportData.quarter = inferred.quarter;
+
+      reportData.meta.systemModel = formatCombinedSystemModel(reportData.meta);
+      reportData.isSavedInArchive = true;
+      reportData.updatedAt = new Date().toISOString();
+
+      const snapshot = JSON.parse(JSON.stringify(reportData));
+      await dbPutReport(snapshot);
+      saveDraft();
+      await updateArchiveCountBadge();
+
+      const qLabel = QUARTER_LABELS[reportData.quarter] || reportData.quarter;
+      const pmText = (reportData.meta.pmName || '').trim() ? ` [${reportData.meta.pmName}]` : '';
+      const actionText = saveAsNewCopy ? '새 리포트로 복제 저장' : '저장(업데이트)';
+      showToast(
+        `✅ <strong>[${reportData.year}년 ${qLabel}] ${escapeHtml(custName)}${escapeHtml(pmText)}</strong> 리포트가 보관함에 ${actionText}되었습니다.`,
+        4500
+      );
+    }
+
+    function setArchiveGroupMode(mode) {
+      archiveGroupMode = mode;
+      ['YQ', 'CUST', 'PM'].forEach(m => {
+        const btn = document.getElementById(`tabGroup_${m}`);
+        if (btn) btn.classList.toggle('active', m === mode);
+      });
+      renderArchiveList();
+    }
+
+    async function openArchiveModal() {
+      await renderArchiveList();
+      document.getElementById('archiveModal').classList.add('open');
+    }
+
+    function closeArchiveModal() {
+      document.getElementById('archiveModal').classList.remove('open');
+    }
+
+    function resetArchiveFilters() {
+      document.getElementById('filterArchiveYear').value = 'ALL';
+      document.getElementById('filterArchiveQuarter').value = 'ALL';
+      document.getElementById('filterArchiveCustomer').value = 'ALL';
+      document.getElementById('filterArchivePm').value = 'ALL';
+      document.getElementById('filterArchiveSearch').value = '';
+      renderArchiveList();
+    }
+
+    async function renderArchiveList() {
+      const allReports = await dbGetAllReports();
+      allReports.forEach(r => migrateLegacySystemModel(r.meta));
+
+      const yearFilterEl = document.getElementById('filterArchiveYear');
+      const prevYearVal = yearFilterEl.value;
+      const yearSet = new Set(allReports.map(r => r.year).filter(Boolean));
+      yearSet.add(String(new Date().getFullYear()));
+      const sortedYears = Array.from(yearSet).sort((a, b) => b.localeCompare(a));
+      yearFilterEl.innerHTML = `<option value="ALL">전체 연도 (${allReports.length}건)</option>` +
+        sortedYears.map(y => `<option value="${y}">${y}년</option>`).join('');
+      if (sortedYears.includes(prevYearVal) || prevYearVal === 'ALL') {
+        yearFilterEl.value = prevYearVal;
+      }
+
+      const custFilterEl = document.getElementById('filterArchiveCustomer');
+      const prevCustVal = custFilterEl.value;
+      const custSet = new Set(allReports.map(r => (r.meta?.customerName || '').trim()).filter(Boolean));
+      const sortedCusts = Array.from(custSet).sort((a, b) => a.localeCompare(b, 'ko'));
+      custFilterEl.innerHTML = `<option value="ALL">전체 고객사 (${sortedCusts.length})</option>` +
+        sortedCusts.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      if (sortedCusts.includes(prevCustVal) || prevCustVal === 'ALL') {
+        custFilterEl.value = prevCustVal;
+      }
+
+      const pmFilterEl = document.getElementById('filterArchivePm');
+      const prevPmVal = pmFilterEl.value;
+      const pmSet = new Set(allReports.map(r => (r.meta?.pmName || '').trim()).filter(Boolean));
+      const sortedPms = Array.from(pmSet).sort((a, b) => a.localeCompare(b, 'ko'));
+      pmFilterEl.innerHTML = `<option value="ALL">전체 PM (${sortedPms.length})</option>` +
+        sortedPms.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+      if (sortedPms.includes(prevPmVal) || prevPmVal === 'ALL') {
+        pmFilterEl.value = prevPmVal;
+      }
+
+      const selectedYear = yearFilterEl.value;
+      const selectedQuarter = document.getElementById('filterArchiveQuarter').value;
+      const selectedCustomer = custFilterEl.value;
+      const selectedPm = pmFilterEl.value;
+      const keyword = (document.getElementById('filterArchiveSearch').value || '').trim().toLowerCase();
+
+      const filtered = allReports.filter(r => {
+        if (selectedYear !== 'ALL' && r.year !== selectedYear) return false;
+        if (selectedQuarter !== 'ALL' && r.quarter !== selectedQuarter) return false;
+        if (selectedCustomer !== 'ALL' && (r.meta?.customerName || '').trim() !== selectedCustomer) return false;
+        if (selectedPm !== 'ALL' && (r.meta?.pmName || '').trim() !== selectedPm) return false;
+        if (keyword) {
+          const pageTexts = (r.pages || []).flatMap(p => (p.blocks || []).map(b => `${b.text || ''} ${b.caption || ''} ${b.caption1 || ''} ${b.caption2 || ''}`));
+          const hay = [
+            r.year,
+            r.quarter,
+            r.keywords,
+            r.meta?.customerName,
+            r.meta?.pmName,
+            r.meta?.systemDetail,
+            r.meta?.systemModel,
+            r.meta?.workPeriod,
+            r.meta?.engineer,
+            r.problemStatement?.description,
+            ...(r.workingItems || []),
+            ...pageTexts
+          ].join(' ').toLowerCase();
+          if (!hay.includes(keyword)) return false;
+        }
+        return true;
+      });
+
+      filtered.sort((a, b) => {
+        if (b.year !== a.year) return String(b.year).localeCompare(String(a.year));
+        if (b.quarter !== a.quarter) return String(b.quarter).localeCompare(String(a.quarter));
+        return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
+      });
+
+      const container = document.getElementById('archiveListContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:48px 20px; color:#64748b;">
+            <p style="font-size:15px; font-weight:700; margin-bottom:6px;">조건에 일치하는 서비스 리포트가 없습니다.</p>
+            <p style="font-size:13px; margin:0;">필터를 초기화하거나, 편집 화면에서 리포트를 작성한 뒤 <strong>[💾 현재 분류로 저장]</strong> 버튼으로 저장해 주세요.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const groups = {};
+      filtered.forEach(rep => {
+        let key = '';
+        let groupTitle = '';
+        if (archiveGroupMode === 'CUST') {
+          const cName = (rep.meta?.customerName || '').trim() || '고객사 미지정';
+          key = `CUST_${cName}`;
+          groupTitle = `🏢 고객사: ${cName}`;
+        } else if (archiveGroupMode === 'PM') {
+          const pName = (rep.meta?.pmName || '').trim() || 'PM 미지정';
+          key = `PM_${pName}`;
+          groupTitle = `⚙️ PM 호기: ${pName}`;
+        } else {
+          const qLabel = QUARTER_LABELS[rep.quarter] || rep.quarter;
+          key = `YQ_${rep.year}_${rep.quarter}`;
+          groupTitle = `📅 ${rep.year}년 ${qLabel}`;
+        }
+
+        if (!groups[key]) {
+          groups[key] = {
+            title: groupTitle,
+            items: []
+          };
+        }
+        groups[key].items.push(rep);
+      });
+
+      container.innerHTML = Object.values(groups).map(group => {
+        const cardsHtml = group.items.map(rep => {
+          const isCurrent = rep.reportId === reportData.reportId && reportData.isSavedInArchive;
+          const qLabel = QUARTER_LABELS[rep.quarter] || rep.quarter;
+          const pmName = (rep.meta?.pmName || '').trim();
+          const sysDisplay = formatCombinedSystemModel(rep.meta);
+          const wiText = (rep.workingItems || []).filter(Boolean).join(' / ') || '작업 요약 없음';
+          const kwList = (rep.keywords || '')
+            .split(/[,#]+/)
+            .map(k => k.trim())
+            .filter(Boolean);
+          const kwHtml = kwList.length > 0
+            ? `<div class="archive-keywords-row">${kwList.map(k => `<span class="kw-chip">#${escapeHtml(k)}</span>`).join('')}</div>`
+            : '';
+
+          const updatedStr = rep.updatedAt
+            ? new Date(rep.updatedAt).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+            : '';
+
+          return `
+            <div class="archive-item-card ${isCurrent ? 'is-active' : ''}">
+              <div class="archive-item-info">
+                <div class="archive-item-top">
+                  <span class="badge-yq">${escapeHtml(rep.year)}년 ${escapeHtml(qLabel)}</span>
+                  ${pmName ? `<span class="badge-pm">PM : ${escapeHtml(pmName)}</span>` : ''}
+                  <span class="archive-cust-name">${escapeHtml(rep.meta?.customerName || '고객사 미지정')}</span>
+                  ${isCurrent ? '<span class="badge-active">현재 열림</span>' : ''}
+                </div>
+                <div class="archive-meta-sub">
+                  작업일: <strong>${escapeHtml(rep.meta?.workPeriod || '-')}</strong> &nbsp;|&nbsp;
+                  설비: ${escapeHtml(sysDisplay || '-')} &nbsp;|&nbsp;
+                  총 ${(rep.pages || []).length}페이지 &nbsp;|&nbsp;
+                  엔지니어: ${escapeHtml(rep.meta?.engineer || '-')}
+                </div>
+                ${kwHtml}
+                <div class="archive-wi-preview">
+                  [Working Items] ${escapeHtml(wiText)} ${updatedStr ? ` · (저장: ${updatedStr})` : ''}
+                </div>
+              </div>
+              <div class="archive-item-actions">
+                <button class="btn btn-primary btn-sm" onclick="loadReportFromArchive('${rep.reportId}', false)">📂 열기 / 수정</button>
+                <button class="btn btn-outline btn-sm" onclick="loadReportFromArchive('${rep.reportId}', true)" title="이 리포트를 복사하여 새 리포트 작성">📑 복제하여 새 작성</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteReportFromArchive('${rep.reportId}')">삭제</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div>
+            <div class="archive-group-title">
+              <span>${escapeHtml(group.title)}</span>
+              <span style="font-size:12px; font-weight:600;">${group.items.length}건</span>
+            </div>
+            ${cardsHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadReportFromArchive(reportId, asNewCopy = false) {
+      const allReports = await dbGetAllReports();
+      const found = allReports.find(r => r.reportId === reportId);
+      if (!found) {
+        alert('선택한 리포트를 찾을 수 없습니다.');
+        return;
+      }
+
+      const cloned = JSON.parse(JSON.stringify(found));
+      migrateLegacySystemModel(cloned.meta);
+      if (cloned.keywords === undefined) cloned.keywords = '';
+      if (!cloned.problemStatement) {
+        cloned.problemStatement = { title: '[현장 발생 문제 현상]', description: '' };
+      }
+      if (!cloned.approval) {
+        cloned.approval = { enabled: true, customerText: '', engineerText: '', customerSig: '', engineerSig: '' };
+      }
+      if (Array.isArray(cloned.pages)) {
+        cloned.pages.forEach(p => { p.collapsed = true; });
+      }
+
+      if (asNewCopy) {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const inferred = inferYearAndQuarter(`${yyyy}. ${mm}. ${dd}`);
+
+        cloned.reportId = uid();
+        cloned.isSavedInArchive = false;
+        cloned.year = inferred.year;
+        cloned.quarter = inferred.quarter;
+        cloned.meta.workPeriod = `${yyyy}. ${mm}. ${dd}`;
+        cloned.approval.customerSig = '';
+        cloned.approval.customerText = '';
+        if (cloned.email) {
+          cloned.email.customEdited = false;
+          cloned.email.subject = buildDefaultEmailSubject(cloned.meta);
+          cloned.email.body = buildDefaultEmailBody(cloned);
+        }
+      } else {
+        cloned.isSavedInArchive = true;
+      }
+
+      reportData = cloned;
+      saveDraft();
+      renderEditor();
+      renderPreview();
+      closeArchiveModal();
+
+      const qLabel = QUARTER_LABELS[reportData.quarter] || reportData.quarter;
+      if (asNewCopy) {
+        showToast(`📑 <strong>${escapeHtml(reportData.meta.customerName)}</strong> 리포트를 복제했습니다. 날짜와 내용을 수정한 뒤 <strong>[💾 현재 분류로 저장]</strong>을 눌러주세요.`, 5500);
+      } else {
+        showToast(`📂 <strong>[${reportData.year}년 ${qLabel}] ${escapeHtml(reportData.meta.customerName)}</strong> 리포트를 불러왔습니다.`, 4000);
+      }
+    }
+
+    async function deleteReportFromArchive(reportId) {
+      if (!confirm('보관함에서 이 서비스 리포트를 영구 삭제하시겠습니까?')) return;
+      await dbDeleteReport(reportId);
+      if (reportData.reportId === reportId) {
+        reportData.isSavedInArchive = false;
+        saveDraft();
+      }
+      await updateArchiveCountBadge();
+      await renderArchiveList();
+      showToast('🗑️ 리포트가 보관함에서 삭제되었습니다.', 3000);
+    }
+
+    async function exportAllArchiveJson() {
+      const allReports = await dbGetAllReports();
+      if (allReports.length === 0) {
+        alert('백업할 저장된 리포트가 없습니다.');
+        return;
+      }
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        type: 'ABB_ServiceReport_Archive',
+        count: allReports.length,
+        reports: allReports
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const today = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `ABB_ServiceReports_Archive_${today}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function importArchiveJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          let listToImport = [];
+          if (parsed && parsed.type === 'ABB_ServiceReport_Archive' && Array.isArray(parsed.reports)) {
+            listToImport = parsed.reports;
+          } else if (parsed && parsed.meta && Array.isArray(parsed.pages)) {
+            if (!parsed.reportId) parsed.reportId = uid();
+            if (!parsed.year || !parsed.quarter) {
+              const inf = inferYearAndQuarter(parsed.meta.workPeriod);
+              parsed.year = inf.year;
+              parsed.quarter = inf.quarter;
+            }
+            listToImport = [parsed];
+          } else {
+            alert('올바른 리포트 백업 JSON 파일이 아닙니다.');
+            return;
+          }
+
+          for (const item of listToImport) {
+            migrateLegacySystemModel(item.meta);
+            item.isSavedInArchive = true;
+            await dbPutReport(item);
+          }
+          await updateArchiveCountBadge();
+          await renderArchiveList();
+          showToast(`📥 총 <strong>${listToImport.length}건</strong>의 리포트를 보관함으로 가져왔습니다.`, 4500);
+        } catch (err) {
+          alert('백업 파일을 읽는 중 오류가 발생했습니다.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function syncAutoEmailFields() {
+      const fnEl = document.getElementById('previewPdfFilename');
+      if (fnEl) fnEl.textContent = `${getSuggestedFileName()}.pdf`;
+
+      if (!reportData.email.customEdited) {
+        reportData.email.subject = buildDefaultEmailSubject(reportData.meta);
+        reportData.email.body = buildDefaultEmailBody(reportData);
+        const subInp = document.getElementById('inpEmailSubject');
+        const bodyInp = document.getElementById('inpEmailBody');
+        if (subInp) subInp.value = reportData.email.subject;
+        if (bodyInp) {
+          bodyInp.value = reportData.email.body;
+          autoResizeTextarea(bodyInp);
+        }
+      }
+    }
+
+    function updatePmOrSystem(field, value) {
+      reportData.meta[field] = value;
+      reportData.meta.systemModel = formatCombinedSystemModel(reportData.meta);
+      syncAutoEmailFields();
+      saveDraft();
+      renderPreview();
+    }
+
+    function updateMeta(key, value) {
+      reportData.meta[key] = value;
+      if (key === 'workPeriod') {
+        const inferred = inferYearAndQuarter(value);
+        reportData.year = inferred.year;
+        reportData.quarter = inferred.quarter;
+        syncCalendarInputFromText(value);
+      }
+      syncAutoEmailFields();
+      saveDraft();
+      renderPreview();
+    }
+
+    function updateEngineerInput(value) {
+      reportData.meta.engineer = value;
+      const extractedName = extractEngineerName(value);
+      reportData.approval.engineerText = extractedName;
+      const engSignInput = document.getElementById('inpEngSignText');
+      if (engSignInput) engSignInput.value = extractedName;
+
+      syncAutoEmailFields();
+      saveDraft();
+      renderPreview();
+    }
+
+    function updateProblemField(key, value) {
+      if (!reportData.problemStatement) {
+        reportData.problemStatement = { title: '[현장 발생 문제 현상]', description: '' };
+      }
+      reportData.problemStatement[key] = value;
+      saveDraft();
+      renderPreview();
+    }
+
+    function updateEmailField(key, value) {
+      reportData.email[key] = value;
+      if (key === 'subject' || key === 'body') {
+        reportData.email.customEdited = true;
+      }
+      saveDraft();
+    }
+
+    function refreshDefaultEmailText() {
+      reportData.email.customEdited = false;
+      syncAutoEmailFields();
+      saveDraft();
+      showToast('리포트 기본 정보 기준으로 메일 제목과 본문이 갱신되었습니다.', 3000);
+    }
+
+    function addWorkingItem() {
+      const nextNum = reportData.workingItems.length + 1;
+      reportData.workingItems.push(`${nextNum}. `);
+      syncAutoEmailFields();
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function updateWorkingItem(idx, val) {
+      reportData.workingItems[idx] = val;
+      syncAutoEmailFields();
+      saveDraft();
+      renderPreview();
+    }
+
+    function removeWorkingItem(idx) {
+      reportData.workingItems.splice(idx, 1);
+      syncAutoEmailFields();
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function togglePageVisibility(pIdx, event) {
+      if (event) event.stopPropagation();
+      const page = reportData.pages[pIdx];
+      if (!page) return;
+      page.collapsed = !page.collapsed;
+      saveDraft();
+      renderEditor();
+    }
+
+    function toggleAllPagesVisibility(shouldCollapse) {
+      reportData.pages.forEach(p => {
+        p.collapsed = shouldCollapse;
+      });
+      saveDraft();
+      renderEditor();
+    }
+
+    function addPage() {
+      reportData.pages.push({
+        id: uid(),
+        collapsed: false,
+        blocks: [
+          { id: uid(), type: 'paragraph', text: '' }
+        ]
+      });
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function removePage(pIdx, event) {
+      if (event) event.stopPropagation();
+      if (reportData.pages.length <= 1) {
+        alert('최소 1개 이상의 페이지가 필요합니다.');
+        return;
+      }
+      if (!confirm(`${pIdx + 1}페이지를 삭제하시겠습니까?`)) return;
+      reportData.pages.splice(pIdx, 1);
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function movePage(pIdx, dir, event) {
+      if (event) event.stopPropagation();
+      const target = pIdx + dir;
+      if (target < 0 || target >= reportData.pages.length) return;
+      const temp = reportData.pages[pIdx];
+      reportData.pages[pIdx] = reportData.pages[target];
+      reportData.pages[target] = temp;
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function addBlock(pIdx, type) {
+      const page = reportData.pages[pIdx];
+      page.collapsed = false;
+      if (type === 'heading') {
+        page.blocks.push({ id: uid(), type: 'heading', text: '3. 추가 점검 항목.' });
+      } else if (type === 'subheading') {
+        page.blocks.push({ id: uid(), type: 'subheading', text: '세부 작업 내용' });
+      } else if (type === 'paragraph') {
+        page.blocks.push({ id: uid(), type: 'paragraph', text: '' });
+      } else if (type === 'image') {
+        page.blocks.push({ id: uid(), type: 'image', src: '', height: 230, caption: '' });
+      } else if (type === 'dual_image') {
+        page.blocks.push({
+          id: uid(),
+          type: 'dual_image',
+          src1: '',
+          caption1: '교정 전',
+          src2: '',
+          caption2: '교정 후',
+          height: 190
+        });
+      }
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function updateBlock(pIdx, bIdx, key, val) {
+      reportData.pages[pIdx].blocks[bIdx][key] = val;
+      saveDraft();
+      renderPreview();
+    }
+
+    function removeBlock(pIdx, bIdx) {
+      reportData.pages[pIdx].blocks.splice(bIdx, 1);
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function moveBlock(pIdx, bIdx, dir) {
+      const blocks = reportData.pages[pIdx].blocks;
+      const target = bIdx + dir;
+      if (target < 0 || target >= blocks.length) return;
+      const temp = blocks[bIdx];
+      blocks[bIdx] = blocks[target];
+      blocks[target] = temp;
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function moveBlockToPage(pIdx, bIdx, targetPageIdx) {
+      if (targetPageIdx < 0 || targetPageIdx >= reportData.pages.length) return;
+      const [block] = reportData.pages[pIdx].blocks.splice(bIdx, 1);
+      reportData.pages[targetPageIdx].blocks.push(block);
+      reportData.pages[targetPageIdx].collapsed = false;
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function processImageFile(file, callback) {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const maxDim = 1400;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+          callback(dataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleImageUpload(event, pIdx, bIdx, fieldName = 'src') {
+      const file = event.target.files[0];
+      if (!file) return;
+      processImageFile(file, (dataUrl) => {
+        reportData.pages[pIdx].blocks[bIdx][fieldName] = dataUrl;
+        saveDraft();
+        renderEditor();
+        renderPreview();
+      });
+    }
+
+    function handleImagePaste(event, pIdx, bIdx, fieldName = 'src') {
+      const items = (event.clipboardData || window.clipboardData).items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          event.preventDefault();
+          const file = items[i].getAsFile();
+          processImageFile(file, (dataUrl) => {
+            reportData.pages[pIdx].blocks[bIdx][fieldName] = dataUrl;
+            saveDraft();
+            renderEditor();
+            renderPreview();
+          });
+          break;
+        }
+      }
+    }
+
+    function toggleApproval(checked) {
+      reportData.approval.enabled = checked;
+      saveDraft();
+      renderPreview();
+    }
+
+    function updateApproval(key, val) {
+      reportData.approval[key] = val;
+      saveDraft();
+      renderPreview();
+    }
+
+    let currentSigTarget = null;
+    let isDrawing = false;
+
+    function openSigModal(target) {
+      currentSigTarget = target;
+      document.getElementById('sigModalTitle').textContent =
+        target === 'customer' ? 'CUSTOMER APPROVAL 서명' : 'ENGINEER APPROVAL 서명';
+      resetSigCanvas();
+      document.getElementById('sigModal').classList.add('open');
+    }
+
+    function closeSigModal() {
+      document.getElementById('sigModal').classList.remove('open');
+    }
+
+    function resetSigCanvas() {
+      const canvas = document.getElementById('sigCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function saveSigCanvas() {
+      const canvas = document.getElementById('sigCanvas');
+      const dataUrl = canvas.toDataURL('image/png');
+      if (currentSigTarget === 'customer') {
+        reportData.approval.customerSig = dataUrl;
+      } else {
+        reportData.approval.engineerSig = dataUrl;
+      }
+      saveDraft();
+      renderPreview();
+      closeSigModal();
+    }
+
+    function clearSig(target) {
+      if (target === 'customer') {
+        reportData.approval.customerSig = '';
+      } else {
+        reportData.approval.engineerSig = '';
+      }
+      saveDraft();
+      renderPreview();
+    }
+
+    (function initSignaturePad() {
+      const canvas = document.getElementById('sigCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#111827';
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top
+        };
+      }
+
+      canvas.addEventListener('pointerdown', (e) => {
+        isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        if (!isDrawing) return;
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      });
+
+      window.addEventListener('pointerup', () => {
+        isDrawing = false;
+      });
+    })();
+
+    function getPageSummaryText(page) {
+      const blocks = page.blocks || [];
+      if (blocks.length === 0) return '빈 페이지';
+      const firstTitle = blocks.find(b => (b.type === 'heading' || b.type === 'subheading') && (b.text || '').trim());
+      if (firstTitle) {
+        const titleStr = firstTitle.text.trim();
+        const shortTitle = titleStr.length > 16 ? titleStr.slice(0, 16) + '…' : titleStr;
+        return `${shortTitle} (${blocks.length}개 항목)`;
+      }
+      return `항목 ${blocks.length}개`;
+    }
+
+    function renderEditor() {
+      document.getElementById('inpKeywords').value = reportData.keywords || '';
+
+      document.getElementById('inpCustomer').value = reportData.meta.customerName || '';
+      document.getElementById('inpPmName').value = reportData.meta.pmName || '';
+      document.getElementById('inpSystemDetail').value = reportData.meta.systemDetail || '';
+      document.getElementById('inpPeriod').value = reportData.meta.workPeriod || '';
+      syncCalendarInputFromText(reportData.meta.workPeriod);
+      document.getElementById('inpDivision').value = reportData.meta.division || '';
+      document.getElementById('inpEngineer').value = reportData.meta.engineer || '';
+
+      const prob = reportData.problemStatement || { title: '[현장 발생 문제 현상]', description: '' };
+      document.getElementById('inpProblemTitle').value = prob.title || '[현장 발생 문제 현상]';
+      document.getElementById('inpProblemDesc').value = prob.description || '';
+
+      document.getElementById('chkApproval').checked = !!reportData.approval.enabled;
+      document.getElementById('inpCustSignText').value = reportData.approval.customerText || '';
+      document.getElementById('inpEngSignText').value = reportData.approval.engineerText || '';
+
+      document.getElementById('inpEmailTo').value = reportData.email.to || '';
+      document.getElementById('inpEmailCc').value = reportData.email.cc || '';
+      document.getElementById('inpEmailSubject').value = reportData.email.subject || '';
+      document.getElementById('inpEmailBody').value = reportData.email.body || '';
+      document.getElementById('previewPdfFilename').textContent = `${getSuggestedFileName()}.pdf`;
+
+      updateDocStatusBadge();
+
+      const wiWrap = document.getElementById('workingItemsEditor');
+      wiWrap.innerHTML = reportData.workingItems.map((item, idx) => `
+        <div class="wi-row">
+          <input type="text" value="${escapeHtml(item)}" oninput="updateWorkingItem(${idx}, this.value)" placeholder="예: 1. PM2 WIS Service." />
+          <button class="btn btn-danger btn-sm" onclick="removeWorkingItem(${idx})">삭제</button>
+        </div>
+      `).join('');
+
+      const pagesWrap = document.getElementById('pagesEditor');
+      pagesWrap.innerHTML = reportData.pages.map((page, pIdx) => {
+        const isCollapsed = page.collapsed !== false;
+        const summaryChipText = getPageSummaryText(page);
+
+        const blocksHtml = page.blocks.map((b, bIdx) => {
+          const typeLabelMap = {
+            heading: '대제목 (번호 섹션)',
+            subheading: '소제목',
+            paragraph: '본문 설명 텍스트',
+            image: '단일 사진 + 캡션 (카메라 촬영 / 파일 선택)',
+            dual_image: '2단 비교 사진 (리포트 좌/우 배치)'
+          };
+
+          let bodyInput = '';
+          if (b.type === 'heading' || b.type === 'subheading') {
+            bodyInput = `<input type="text" value="${escapeHtml(b.text)}" oninput="updateBlock(${pIdx}, ${bIdx}, 'text', this.value)" />`;
+          } else if (b.type === 'paragraph') {
+            bodyInput = `<textarea oninput="autoResizeTextarea(this); updateBlock(${pIdx}, ${bIdx}, 'text', this.value)" placeholder="점검 내용 및 조치 결과를 입력하세요.">${escapeHtml(b.text)}</textarea>`;
+          } else if (b.type === 'image') {
+            const thumbHtml = b.src ? `
+              <div class="editor-thumb-box">
+                <img src="${b.src}" alt="등록된 사진 썸네일" />
+                <span class="editor-thumb-label">✓ 사진 등록됨 (클릭 후 Ctrl+V 또는 촬영/선택으로 교체)</span>
+              </div>
+            ` : '';
+
+            bodyInput = `
+              <div class="paste-zone ${b.src ? 'has-image' : ''}" tabindex="0"
+                   onpaste="handleImagePaste(event, ${pIdx}, ${bIdx}, 'src')"
+                   onclick="this.focus()">
+                ${thumbHtml}
+                <p><strong>여기를 클릭 후 Ctrl+V (이미지 붙여넣기)</strong></p>
+                <small>또는 아래 버튼으로 <strong>직접 카메라 촬영</strong> 또는 앨범 사진 선택</small>
+                <div style="margin-top:6px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+                  <label class="btn btn-primary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+                    📸 카메라로 직접 촬영
+                    <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src')" />
+                  </label>
+                  <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+                    📁 앨범/파일 선택
+                    <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src')" />
+                  </label>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <label style="white-space:nowrap;">사진 높이: <span id="hVal_${pIdx}_${bIdx}">${b.height}</span>px</label>
+                <input type="range" min="110" max="450" value="${b.height}" style="flex:1;"
+                       oninput="document.getElementById('hVal_${pIdx}_${bIdx}').textContent=this.value; updateBlock(${pIdx}, ${bIdx}, 'height', Number(this.value))" />
+                ${b.src ? `<button class="btn btn-danger btn-sm" onclick="updateBlock(${pIdx}, ${bIdx}, 'src', ''); renderEditor();">사진 제거</button>` : ''}
+              </div>
+              <input type="text" value="${escapeHtml(b.caption)}" oninput="updateBlock(${pIdx}, ${bIdx}, 'caption', this.value)" placeholder="사진 아래 설명(캡션) 입력 (선택)" />
+            `;
+          } else if (b.type === 'dual_image') {
+            const thumb1Html = b.src1 ? `
+              <div class="editor-thumb-box">
+                <img src="${b.src1}" alt="좌측 사진 썸네일" />
+                <span class="editor-thumb-label">✓ 좌측 사진 등록됨</span>
+              </div>
+            ` : '';
+            const thumb2Html = b.src2 ? `
+              <div class="editor-thumb-box">
+                <img src="${b.src2}" alt="우측 사진 썸네일" />
+                <span class="editor-thumb-label">✓ 우측 사진 등록됨</span>
+              </div>
+            ` : '';
+
+            bodyInput = `
+              <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;">
+                <div class="dual-slot-box">
+                  <div class="dual-slot-header">
+                    <span class="dual-slot-title">① 좌측 사진 (리포트 왼쪽 배치)</span>
+                    ${b.src1 ? `<button class="btn btn-danger btn-sm" onclick="updateBlock(${pIdx}, ${bIdx}, 'src1', ''); renderEditor();">사진 제거</button>` : ''}
+                  </div>
+                  <div class="paste-zone ${b.src1 ? 'has-image' : ''}" tabindex="0" style="margin-bottom:6px;"
+                       onpaste="handleImagePaste(event, ${pIdx}, ${bIdx}, 'src1')"
+                       onclick="this.focus()">
+                    ${thumb1Html}
+                    <p><strong>여기를 클릭 후 Ctrl+V (좌측 이미지 붙여넣기)</strong></p>
+                    <small>또는 촬영/파일 선택</small>
+                    <div style="margin-top:5px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+                      <label class="btn btn-primary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+                        📸 촬영
+                        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src1')" />
+                      </label>
+                      <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+                        📁 선택
+                        <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src1')" />
+                      </label>
+                    </div>
+                  </div>
+                  <input type="text" value="${escapeHtml(b.caption1)}" oninput="updateBlock(${pIdx}, ${bIdx}, 'caption1', this.value)" placeholder="좌측 사진 설명 (예: 교정 전)" />
+                </div>
+
+                <div class="dual-slot-box">
+                  <div class="dual-slot-header">
+                    <span class="dual-slot-title">② 우측 사진 (리포트 오른쪽 배치)</span>
+                    ${b.src2 ? `<button class="btn btn-danger btn-sm" onclick="updateBlock(${pIdx}, ${bIdx}, 'src2', ''); renderEditor();">사진 제거</button>` : ''}
+                  </div>
+                  <div class="paste-zone ${b.src2 ? 'has-image' : ''}" tabindex="0" style="margin-bottom:6px;"
+                       onpaste="handleImagePaste(event, ${pIdx}, ${bIdx}, 'src2')"
+                       onclick="this.focus()">
+                    ${thumb2Html}
+                    <p><strong>여기를 클릭 후 Ctrl+V (우측 이미지 붙여넣기)</strong></p>
+                    <small>또는 촬영/파일 선택</small>
+                    <div style="margin-top:5px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+                      <label class="btn btn-primary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+                        📸 촬영
+                        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src2')" />
+                      </label>
+                      <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+                        📁 선택
+                        <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src2')" />
+                      </label>
+                    </div>
+                  </div>
+                  <input type="text" value="${escapeHtml(b.caption2)}" oninput="updateBlock(${pIdx}, ${bIdx}, 'caption2', this.value)" placeholder="우측 사진 설명 (예: 교정 후)" />
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="white-space:nowrap;">사진 높이: <span id="hValDual_${pIdx}_${bIdx}">${b.height}</span>px</label>
+                <input type="range" min="110" max="340" value="${b.height}" style="flex:1;"
+                       oninput="document.getElementById('hValDual_${pIdx}_${bIdx}').textContent=this.value; updateBlock(${pIdx}, ${bIdx}, 'height', Number(this.value));" />
+              </div>
+            `;
+          }
+
+          return `
+            <div class="block-item">
+              <div class="block-item-top">
+                <span class="block-type-badge">${typeLabelMap[b.type]}</span>
+                <div class="block-controls">
+                  ${pIdx > 0 ? `<button class="btn btn-outline btn-sm" onclick="moveBlockToPage(${pIdx}, ${bIdx}, ${pIdx - 1})" title="이전 페이지로 이동">↖이전P</button>` : ''}
+                  ${pIdx < reportData.pages.length - 1 ? `<button class="btn btn-outline btn-sm" onclick="moveBlockToPage(${pIdx}, ${bIdx}, ${pIdx + 1})" title="다음 페이지로 이동">다음P↘</button>` : ''}
+                  <button class="btn btn-outline btn-sm" onclick="moveBlock(${pIdx}, ${bIdx}, -1)" title="위로">▲</button>
+                  <button class="btn btn-outline btn-sm" onclick="moveBlock(${pIdx}, ${bIdx}, 1)" title="아래로">▼</button>
+                  <button class="btn btn-danger btn-sm" onclick="removeBlock(${pIdx}, ${bIdx})">✕</button>
+                </div>
+              </div>
+              ${bodyInput}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="page-editor-card ${isCollapsed ? 'is-collapsed' : ''}">
+            <div class="page-editor-header" onclick="togglePageVisibility(${pIdx}, event)">
+              <div class="page-header-left">
+                <span class="page-title-label">📄 Page ${pIdx + 1}</span>
+                <span class="page-summary-chip">${escapeHtml(summaryChipText)}</span>
+              </div>
+              <div style="display:flex; gap:4px; flex-shrink:0;" onclick="event.stopPropagation()">
+                <button class="btn btn-toggle-page btn-sm" onclick="togglePageVisibility(${pIdx}, event)">
+                  ${isCollapsed ? '▼ 보이기' : '▲ 숨기기'}
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="movePage(${pIdx}, -1, event)" ${pIdx === 0 ? 'disabled' : ''} title="페이지 위로 이동">▲</button>
+                <button class="btn btn-outline btn-sm" onclick="movePage(${pIdx}, 1, event)" ${pIdx === reportData.pages.length - 1 ? 'disabled' : ''} title="페이지 아래로 이동">▼</button>
+                <button class="btn btn-danger btn-sm" onclick="removePage(${pIdx}, event)" title="페이지 삭제">삭제</button>
+              </div>
+            </div>
+            <div class="page-editor-body">
+              ${blocksHtml}
+              <div class="add-block-bar">
+                <button class="btn btn-outline btn-sm" onclick="addBlock(${pIdx}, 'heading')">+ 대제목</button>
+                <button class="btn btn-outline btn-sm" onclick="addBlock(${pIdx}, 'subheading')">+ 소제목</button>
+                <button class="btn btn-outline btn-sm" onclick="addBlock(${pIdx}, 'paragraph')">+ 본문글</button>
+                <button class="btn btn-outline btn-sm" onclick="addBlock(${pIdx}, 'image')">+ 사진</button>
+                <button class="btn btn-outline btn-sm" onclick="addBlock(${pIdx}, 'dual_image')">+ 2단 비교사진</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      autoResizeAllTextareas();
+    }
+
+    function buildDocHeaderHtml() {
+      const m = reportData.meta;
+      const pmVal = (m.pmName || '').trim();
+      const sysVal = (m.systemDetail || '').trim();
+      const fallbackRaw = (m.systemModel || '').trim();
+
+      let sysCellHtml = '';
+      if (pmVal || sysVal) {
+        sysCellHtml = `
+          <div class="meta-sys-lines">
+            ${pmVal ? `<div>PM : ${escapeHtml(pmVal)}</div>` : ''}
+            ${sysVal ? `<div>System : ${escapeHtml(sysVal)}</div>` : ''}
+          </div>
+        `;
+      } else {
+        sysCellHtml = escapeHtml(fallbackRaw);
+      }
+
+      return `
+        <div class="doc-header">
+          <div class="doc-title-row">
+            <h1 class="doc-main-title">CUSTOMER SERVICE REPORT</h1>
+            <div class="abb-logo-wrap">${ABB_LOGO_SVG}</div>
+          </div>
+          <table class="meta-table">
+            <colgroup>
+              <col style="width: 17%;" />
+              <col style="width: 31%;" />
+              <col style="width: 15%;" />
+              <col style="width: 16%;" />
+              <col style="width: 21%;" />
+            </colgroup>
+            <tr>
+              <td class="meta-label">CUSTOMER NAME</td>
+              <td class="meta-value" colspan="3">${escapeHtml(m.customerName)}</td>
+              <td class="meta-right">${escapeHtml(m.division)}</td>
+            </tr>
+            <tr>
+              <td class="meta-label">SYSTEM MODEL</td>
+              <td class="meta-value">${sysCellHtml}</td>
+              <td class="meta-label">WORK PERIOD</td>
+              <td class="meta-period-value">${escapeHtml(m.workPeriod)}</td>
+              <td class="meta-right">${escapeHtml(m.engineer)}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+    }
+
+    function buildFooterLeftText() {
+      const m = reportData.meta;
+      const parts = ['Service Report'];
+      if ((m.workPeriod || '').trim()) parts.push(m.workPeriod.trim());
+      if ((m.customerName || '').trim()) parts.push(m.customerName.trim());
+      if ((m.pmName || '').trim()) parts.push(m.pmName.trim());
+      if ((m.systemDetail || '').trim()) parts.push(m.systemDetail.trim());
+      else if (!(m.pmName || '').trim() && (m.systemModel || '').trim()) parts.push(m.systemModel.trim());
+      return parts.join('  ');
+    }
+
+    function renderPreview() {
+      const container = document.getElementById('previewContainer');
+      const totalPages = reportData.pages.length;
+      const footerLeftLabel = buildFooterLeftText();
+      document.getElementById('pageCountBadge').textContent = `총 ${totalPages} 페이지`;
+
+      container.innerHTML = reportData.pages.map((page, pIdx) => {
+        const isFirst = pIdx === 0;
+        const isLast = pIdx === totalPages - 1;
+
+        const workingItemsHtml = isFirst && reportData.workingItems.length > 0 ? `
+          <div class="working-items-box">
+            <div class="working-items-title">[Working Items]</div>
+            <ul class="working-items-list">
+              ${reportData.workingItems.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : '';
+
+        const prob = reportData.problemStatement || { title: '[현장 발생 문제 현상]', description: '' };
+        const problemHtml = (isFirst && (prob.description || '').trim()) ? `
+          <div class="problem-summary-box">
+            <div class="problem-summary-title">${escapeHtml(prob.title || '[현장 발생 문제 현상]')}</div>
+            <p class="problem-summary-text">${escapeHtml(prob.description)}</p>
+          </div>
+        ` : '';
+
+        const blocksHtml = page.blocks.map(b => {
+          if (b.type === 'heading') {
+            return `<div class="doc-section-heading">${escapeHtml(b.text)}</div>`;
+          }
+          if (b.type === 'subheading') {
+            return `<div class="doc-sub-heading">${escapeHtml(b.text)}</div>`;
+          }
+          if (b.type === 'paragraph') {
+            return `<p class="doc-paragraph">${escapeHtml(b.text)}</p>`;
+          }
+          if (b.type === 'image') {
+            const imgTag = b.src
+              ? `<img src="${b.src}" style="max-height:${b.height}px;" alt="Service Photo" />`
+              : `<div style="width:85%; height:${b.height}px; border:1.5px dashed #cbd5e1; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:12px;">[사진 미첨부] 카메라로 직접 촬영하거나 이미지를 추가하세요</div>`;
+            const capTag = b.caption ? `<div class="doc-image-caption">${escapeHtml(b.caption)}</div>` : '';
+            return `<div class="doc-image-block">${imgTag}${capTag}</div>`;
+          }
+          if (b.type === 'dual_image') {
+            const img1 = b.src1
+              ? `<img src="${b.src1}" style="max-height:${b.height}px;" alt="Left Photo" />`
+              : `<div style="width:100%; height:${b.height}px; border:1px dashed #cbd5e1; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px;">① 좌측 사진</div>`;
+            const img2 = b.src2
+              ? `<img src="${b.src2}" style="max-height:${b.height}px;" alt="Right Photo" />`
+              : `<div style="width:100%; height:${b.height}px; border:1px dashed #cbd5e1; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px;">② 우측 사진</div>`;
+            return `
+              <div class="doc-dual-image-block">
+                <div class="dual-col">${img1}${b.caption1 ? `<div class="doc-image-caption">${escapeHtml(b.caption1)}</div>` : ''}</div>
+                <div class="dual-col">${img2}${b.caption2 ? `<div class="doc-image-caption">${escapeHtml(b.caption2)}</div>` : ''}</div>
+              </div>
+            `;
+          }
+          return '';
+        }).join('');
+
+        const app = reportData.approval || {};
+
+        const approvalHtml = (isLast && app.enabled) ? `
+          <div class="approval-section">
+            <table class="approval-table">
+              <tr>
+                <th>CUSTOMER APPROVAL</th>
+                <th>ENGINEER APPROVAL</th>
+              </tr>
+              <tr>
+                <td>
+                  <div class="approval-cell-grid">
+                    <div class="approval-name-area">
+                      <div class="approval-signer-text">${escapeHtml(app.customerText)}</div>
+                    </div>
+                    <div class="approval-sig-area">
+                      ${app.customerSig ? `<img class="approval-sig-img" src="${app.customerSig}" alt="Customer Signature" />` : ''}
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="approval-cell-grid">
+                    <div class="approval-name-area">
+                      <div class="approval-signer-text">${escapeHtml(app.engineerText)}</div>
+                    </div>
+                    <div class="approval-sig-area">
+                      ${app.engineerSig ? `<img class="approval-sig-img" src="${app.engineerSig}" alt="Engineer Signature" />` : ''}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        ` : '';
+
+        return `
+          <article class="a4-page" id="a4Page_${pIdx}">
+            ${buildDocHeaderHtml()}
+            <div class="doc-body" id="docBody_${pIdx}">
+              ${workingItemsHtml}
+              ${problemHtml}
+              ${blocksHtml}
+            </div>
+            ${approvalHtml}
+            <div class="doc-footer">
+              <span class="doc-footer-left">${escapeHtml(footerLeftLabel)}</span>
+              <span class="doc-footer-right">${pIdx + 1} / ${totalPages}</span>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      requestAnimationFrame(() => {
+        reportData.pages.forEach((_, pIdx) => {
+          const pageEl = document.getElementById(`a4Page_${pIdx}`);
+          const bodyEl = document.getElementById(`docBody_${pIdx}`);
+          if (pageEl && bodyEl) {
+            if (bodyEl.scrollHeight > bodyEl.clientHeight + 2) {
+              pageEl.classList.add('is-overflowing');
+              const warn = document.createElement('div');
+              warn.className = 'overflow-warning';
+              warn.textContent = '⚠️ 내용이 A4 높이를 초과했습니다 (사진 높이 축소 또는 다음P 이동 권장)';
+              pageEl.appendChild(warn);
+            }
+          }
+        });
+      });
+    }
+
+    function loadSampleReport() {
+      if (!confirm('현재 편집 중인 내용을 샘플 리포트(한솔제지 대전공장)로 대체하시겠습니까?')) return;
+      const savedEmailTo = reportData.email.to;
+      const savedEmailCc = reportData.email.cc;
+      reportData = getSampleData();
+      reportData.email.to = savedEmailTo;
+      reportData.email.cc = savedEmailCc;
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function resetNewReport() {
+      if (!confirm('새 리포트를 작성하시겠습니까? (보관함에 저장된 기존 리포트는 유지됩니다)')) return;
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const periodStr = `${yyyy}. ${mm}. ${dd}`;
+      const inferred = inferYearAndQuarter(periodStr);
+
+      reportData = {
+        reportId: uid(),
+        isSavedInArchive: false,
+        year: inferred.year,
+        quarter: inferred.quarter,
+        keywords: '',
+        updatedAt: new Date().toISOString(),
+        meta: {
+          customerName: '',
+          pmName: '',
+          systemDetail: 'QCS 800xA 6.1, WIS 7.5',
+          systemModel: 'System : QCS 800xA 6.1, WIS 7.5',
+          workPeriod: periodStr,
+          division: reportData.meta.division || 'IAPI/Pulp&Paper',
+          engineer: reportData.meta.engineer || '양성우 부장'
+        },
+        workingItems: ['1. '],
+        problemStatement: {
+          title: '[현장 발생 문제 현상]',
+          description: ''
+        },
+        approval: {
+          enabled: true,
+          customerText: '',
+          engineerText: extractEngineerName(reportData.meta.engineer || '양성우 부장'),
+          customerSig: '',
+          engineerSig: ''
+        },
+        email: {
+          to: '',
+          cc: reportData.email.cc || '',
+          subject: '',
+          body: '',
+          customEdited: false
+        },
+        pages: [
+          {
+            id: uid(),
+            collapsed: true,
+            blocks: [
+              { id: uid(), type: 'heading', text: '1. 점검 내역.' },
+              { id: uid(), type: 'paragraph', text: '' },
+              { id: uid(), type: 'image', src: '', height: 240, caption: '' }
+            ]
+          }
+        ]
+      };
+      syncAutoEmailFields();
+      saveDraft();
+      renderEditor();
+      renderPreview();
+    }
+
+    function getSuggestedFileName() {
+      const dateClean = (reportData.meta.workPeriod || '2026-01-01')
+        .replace(/\.\s*/g, '-')
+        .replace(/[^0-9-]/g, '')
+        .replace(/-+$/, '');
+      const custClean = (reportData.meta.customerName || 'Customer')
+        .replace(/\s+/g, '')
+        .replace(/[\\/:*?"<>|]/g, '');
+      const pmClean = (reportData.meta.pmName || '')
+        .replace(/\s+/g, '')
+        .replace(/[\\/:*?"<>|]/g, '');
+      return `${dateClean || 'Report'}.${custClean || 'Service'}${pmClean ? '.' + pmClean : ''}`;
+    }
+
+    async function generatePdfAndSendEmail() {
+      const toAddr = (reportData.email.to || '').trim();
+      const ccAddr = (reportData.email.cc || '').trim();
+      const subject = reportData.email.subject || buildDefaultEmailSubject(reportData.meta);
+      const body = reportData.email.body || buildDefaultEmailBody(reportData);
+
+      if (!toAddr) {
+        const emailInput = document.getElementById('inpEmailTo');
+        emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        emailInput.focus();
+        showToast('⚠️ <strong>받는 사람 메일 주소</strong>를 먼저 입력해 주세요.', 4000);
+        return;
+      }
+
+      const fileName = `${getSuggestedFileName()}.pdf`;
+      const btnTop = document.getElementById('btnSendMailTop');
+      const btnBot = document.getElementById('btnSendMailBottom');
+      if (btnTop) { btnTop.disabled = true; btnTop.textContent = '⏳ PDF 생성 중...'; }
+      if (btnBot) { btnBot.disabled = true; btnBot.textContent = '⏳ PDF 파일 생성 중입니다...'; }
+
+      try {
+        if (typeof window.html2canvas === 'function' && window.jspdf && window.jspdf.jsPDF) {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+          });
+
+          const pageEls = document.querySelectorAll('.a4-page');
+          for (let i = 0; i < pageEls.length; i++) {
+            const pageEl = pageEls[i];
+            const warnEl = pageEl.querySelector('.overflow-warning');
+            const prevShadow = pageEl.style.boxShadow;
+            const prevOutline = pageEl.style.outline;
+
+            if (warnEl) warnEl.style.display = 'none';
+            pageEl.style.boxShadow = 'none';
+            pageEl.style.outline = 'none';
+
+            const canvas = await window.html2canvas(pageEl, {
+              scale: 2,
+              useCORS: true,
+              backgroundColor: '#ffffff',
+              logging: false
+            });
+
+            if (warnEl) warnEl.style.display = '';
+            pageEl.style.boxShadow = prevShadow;
+            pageEl.style.outline = prevOutline;
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.94);
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+          }
+
+          const pdfBlob = pdf.output('blob');
+          const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+          if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({
+              files: [pdfFile],
+              title: subject,
+              text: `To: ${toAddr}\n${body}`
+            });
+            showToast(`✅ <strong>${fileName}</strong> 파일이 공유되었습니다.`);
+            return;
+          }
+
+          pdf.save(fileName);
+          openMailClient(toAddr, ccAddr, subject, body);
+          showToast(
+            `✅ <strong>${fileName}</strong> 파일이 다운로드되었습니다.<br>` +
+            `잠시 후 열리는 메일 앱에 다운로드된 PDF를 첨부해 주세요.`,
+            8000
+          );
+        } else {
+          openMailClient(toAddr, ccAddr, subject, body);
+          printToPdf();
+        }
+      } catch (err) {
+        if (err && err.name !== 'AbortError') {
+          console.error(err);
+          openMailClient(toAddr, ccAddr, subject, body);
+          showToast('⚠️ PDF 자동 생성 중 오류가 발생하여 메일 창만 실행했습니다. [PDF 인쇄/저장]으로 저장 후 첨부해 주세요.', 6000);
+        }
+      } finally {
+        if (btnTop) { btnTop.disabled = false; btnTop.textContent = '✉️ PDF & 메일'; }
+        if (btnBot) { btnBot.disabled = false; btnBot.textContent = '✉️ PDF 파일 저장 후 메일 앱 열기'; }
+      }
+    }
+
+    function openMailClient(to, cc, subject, body) {
+      const params = [];
+      if (cc) params.push(`cc=${encodeURIComponent(cc)}`);
+      if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+      if (body) params.push(`body=${encodeURIComponent(body)}`);
+      const query = params.length > 0 ? `?${params.join('&')}` : '';
+      const mailtoUrl = `mailto:${encodeURIComponent(to)}${query}`;
+
+      const link = document.createElement('a');
+      link.href = mailtoUrl;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printToPdf() {
+      const prevTitle = document.title;
+      document.title = getSuggestedFileName();
+      window.print();
+      setTimeout(() => {
+        document.title = prevTitle;
+      }, 500);
+    }
+
+    refreshCustomerDatalists();
+    updateCustomerCountBadge();
+    renderEditor();
+    renderPreview();
+    updateArchiveCountBadge();
+  </script>
 </body>
 </html>
