@@ -250,7 +250,7 @@
       flex-wrap: wrap;
     }
 
-    /* 상단 고정(Sticky) 헤더 */
+    /* 3. 페이지별 점검 내용 & 사진 상단 고정(Sticky) 헤더 */
     .sticky-pages-header {
       position: sticky;
       top: -16px;
@@ -295,6 +295,7 @@
       grid-column: 1 / -1;
     }
 
+    /* 키워드 입력 박스 강조 스타일 */
     .keyword-inline-box {
       background: #eef2ff;
       border: 1px solid #c7d2fe;
@@ -356,6 +357,7 @@
       box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
     }
 
+    /* 수동 리사이즈 핸들 & 스크롤바 제거 + 자동 줄바꿈 + 높이 자동 확장 */
     textarea {
       resize: none !important;
       overflow-y: hidden !important;
@@ -375,6 +377,7 @@
       line-height: 1.4;
     }
 
+    /* PM : / System : 두 줄 배치 */
     .sys-model-split {
       display: flex;
       flex-direction: column;
@@ -419,6 +422,7 @@
       background: #ffffff;
     }
 
+    /* 날짜 입력 + 달력 피커 결합 */
     .date-input-wrap {
       display: flex;
       gap: 4px;
@@ -457,12 +461,14 @@
       border: none;
     }
 
+    /* Working Items 리스트 */
     .wi-row {
       display: flex;
       gap: 6px;
       margin-bottom: 6px;
     }
 
+    /* 페이지 편집 카드 (접기/펼치기 지원) */
     .page-editor-card {
       background: #fff;
       border: 1px solid #cbd5e1;
@@ -617,6 +623,7 @@
       color: #64748b;
     }
 
+    /* 편집기 내 사진 썸네일 미리보기 */
     .editor-thumb-box {
       display: flex;
       flex-direction: column;
@@ -674,6 +681,7 @@
       border-top: 1px dashed #cbd5e1;
     }
 
+    /* 우측 A4 미리보기 패널 */
     .preview-pane {
       flex: 1;
       display: flex;
@@ -703,6 +711,7 @@
       gap: 24px;
     }
 
+    /* 실제 A4 문서 스타일 */
     .a4-page {
       width: 210mm;
       height: 297mm;
@@ -733,6 +742,7 @@
       z-index: 5;
     }
 
+    /* 리포트 상단 헤더 */
     .doc-header {
       margin-bottom: 12px;
       flex-shrink: 0;
@@ -788,6 +798,7 @@
       color: #111111;
     }
 
+    /* 리포트 상단 표 SYSTEM MODEL 두 줄 표시 */
     .meta-sys-lines {
       display: flex;
       flex-direction: column;
@@ -810,6 +821,7 @@
       color: #111111;
     }
 
+    /* 본문 영역 */
     .doc-body {
       flex: 1;
       display: flex;
@@ -837,6 +849,7 @@
       line-height: 1.7;
     }
 
+    /* 현장 발생 문제 현상 박스 (Working Items와 대제목 사이) */
     .problem-summary-box {
       border: 1px solid #9ca3af;
       border-left: 3.5px solid #374151;
@@ -860,6 +873,7 @@
       white-space: pre-wrap;
     }
 
+    /* 대제목 · 소제목 · 본문 설명 텍스트 계층별 들여쓰기 구분 + 줄간격 & 문단간 여백 */
     .doc-section-heading {
       font-size: 11.5pt;
       font-weight: 700;
@@ -887,6 +901,7 @@
       color: #111111;
     }
 
+    /* 본문글과 본문글 사이 한 줄 여백 */
     .doc-paragraph + .doc-paragraph {
       margin-top: 10pt;
     }
@@ -914,6 +929,7 @@
       white-space: pre-wrap;
     }
 
+    /* 리포트 본문 내 2단 사진 (좌/우 배치) */
     .doc-dual-image-block {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -937,6 +953,7 @@
       background: #f9fafb;
     }
 
+    /* 하단 승인란 (마지막 페이지: 2/3 이름 + 1/3 서명 비율) */
     .approval-section {
       margin-top: auto;
       padding-top: 10px;
@@ -1010,6 +1027,7 @@
       display: block;
     }
 
+    /* 하단 푸터: 좌측 Service Report 요약 / 우측 페이지 번호 */
     .doc-footer {
       display: flex;
       align-items: center;
@@ -1037,6 +1055,7 @@
       flex-shrink: 0;
     }
 
+    /* 공통 모달 */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -1061,6 +1080,7 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     }
 
+    /* 대형 모달 (보관함 / 고객사 관리 공용) */
     .wide-modal-box {
       width: 980px;
       max-width: 96vw;
@@ -1109,6 +1129,7 @@
       gap: 8px;
     }
 
+    /* 고객사 관리 모달 전용 */
     .customer-form-box {
       background: #ffffff;
       border: 1px solid #cbd5e1;
@@ -1156,6 +1177,7 @@
       background: #f1f5f9;
     }
 
+    /* 보관함 모달 전용 (다차원 분류 & 키워드 검색) */
     .archive-view-tabs {
       background: #e2e8f0;
       padding: 8px 20px;
@@ -1326,6 +1348,7 @@
       margin: 10px 0;
     }
 
+    /* 반응형 (태블릿/모바일) */
     @media (max-width: 1024px) {
       body {
         height: auto;
@@ -1359,6 +1382,7 @@
       }
     }
 
+    /* 인쇄 및 PDF 출력 전용 스타일 */
     @page {
       size: A4 portrait;
       margin: 0;
@@ -1418,9 +1442,11 @@
 </head>
 <body>
 
+  <!-- 고객사 드롭다운 자동완성 데이터리스트 -->
   <datalist id="customerNameDatalist"></datalist>
   <datalist id="customerEmailDatalist"></datalist>
 
+  <!-- 상단 툴바 -->
   <header class="top-toolbar">
     <div class="toolbar-left">
       <span class="toolbar-badge">ABB</span>
@@ -1439,7 +1465,10 @@
   </header>
 
   <div class="app-container">
+    <!-- 좌측: 리포트 작성 및 편집 패널 -->
     <aside class="editor-pane" id="editorPane">
+
+      <!-- 1. 기본 헤더 정보 + 키워드 + 저장 버튼 -->
       <section class="card">
         <div class="card-header">
           <h2 class="card-title">1. 리포트 기본 정보 (전체 페이지 상단 공통)</h2>
@@ -1482,9 +1511,10 @@
           </div>
           <div class="form-group">
             <label>ENGINEER (담당 엔지니어)</label>
-            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="예: Sung-Woo Yang" />
+            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="Kil-Dong Hong" />
           </div>
 
+          <!-- 키워드 입력 창 (저장 버튼 바로 위 배치) -->
           <div class="form-group full keyword-inline-box">
             <div class="keyword-inline-header">
               <label for="inpKeywords">🏷️ 키워드 / 태그 (쉼표로 구분 · 보관함 검색용)</label>
@@ -1493,6 +1523,7 @@
             <input type="text" id="inpKeywords" oninput="updateClassification('keywords', this.value)" placeholder="예: WIS, 카메라오버홀, 초점교정, 평량센서" />
           </div>
 
+          <!-- 저장 버튼 -->
           <div class="form-group full" style="flex-direction:row; gap:8px; margin-top:2px;">
             <button class="btn btn-save" style="flex:1; justify-content:center;" onclick="saveCurrentReportToArchive(false)">
               💾 현재 분류로 저장
@@ -1504,6 +1535,7 @@
         </div>
       </section>
 
+      <!-- 2. Working Items -->
       <section class="card">
         <div class="card-header">
           <h2 class="card-title">2. [Working Items] 작업 요약</h2>
@@ -1512,6 +1544,7 @@
         <div id="workingItemsEditor"></div>
       </section>
 
+      <!-- 2-1. 현장 발생 문제 현상 (Working Items와 대제목 사이 출력) -->
       <section class="card problem-card">
         <div class="card-header">
           <h2 class="card-title">🚨 현장 발생 문제 현상 (Working Items 아래 표시)</h2>
@@ -1526,6 +1559,7 @@
         </div>
       </section>
 
+      <!-- 3. 페이지별 상세 점검 내역 및 사진 -->
       <section class="card">
         <div class="card-header sticky-pages-header">
           <h2 class="card-title">3. 페이지별 점검 내용 & 사진</h2>
@@ -1538,6 +1572,7 @@
         <div id="pagesEditor" style="display:flex; flex-direction:column; gap:8px;"></div>
       </section>
 
+      <!-- 4. 하단 승인란 설정 -->
       <section class="card">
         <div class="card-header">
           <h2 class="card-title">4. 하단 승인란 (마지막 페이지)</h2>
@@ -1564,6 +1599,7 @@
         </div>
       </section>
 
+      <!-- 5. 이메일 발송 설정 -->
       <section class="card email-card" id="emailSection">
         <div class="card-header">
           <h2 class="card-title">5. 이메일 발송 설정 (PDF 파일 생성 & 메일 연동)</h2>
@@ -1602,6 +1638,7 @@
 
     </aside>
 
+    <!-- 우측: 실시간 A4 리포트 미리보기 -->
     <main class="preview-pane">
       <div class="preview-subbar">
         <span>실시간 A4 인쇄 미리보기 (모든 페이지 상단 헤더 및 하단 푸터 자동 반영)</span>
@@ -1611,6 +1648,7 @@
     </main>
   </div>
 
+  <!-- 고객사 정보 관리 설정 모달 -->
   <div class="modal-backdrop" id="customerModal">
     <div class="modal-box wide-modal-box">
       <div class="wide-modal-header">
@@ -1674,6 +1712,7 @@
     </div>
   </div>
 
+  <!-- 년도·분기·고객사·PM·키워드별 리포트 보관함 모달 -->
   <div class="modal-backdrop" id="archiveModal">
     <div class="modal-box wide-modal-box">
       <div class="wide-modal-header">
@@ -1718,8 +1757,10 @@
     </div>
   </div>
 
+  <!-- 알림 토스트 배너 -->
   <div class="toast-banner" id="toastBanner"></div>
 
+  <!-- 전자 서명 모달 -->
   <div class="modal-backdrop" id="sigModal">
     <div class="modal-box">
       <h3 style="margin:0 0 6px 0; font-size:15px;" id="sigModalTitle">전자 서명 입력</h3>
@@ -1749,6 +1790,7 @@
       Q4: '4분기 (Q4)'
     };
 
+    // ABB 벡터 로고 SVG
     const ABB_LOGO_SVG = `
       <svg width="86" height="32" viewBox="0 0 130 48" xmlns="http://www.w3.org/2000/svg" aria-label="ABB">
         <g fill="#FF000F">
@@ -1768,6 +1810,9 @@
       </svg>
     `;
 
+    // ==========================================
+    // Textarea 자동 높이 확장
+    // ==========================================
     function autoResizeTextarea(el) {
       if (!el) return;
       el.style.height = 'auto';
@@ -1784,6 +1829,9 @@
       });
     }
 
+    // ==========================================
+    // IndexedDB 래퍼 (대용량 리포트 보관)
+    // ==========================================
     let memoryFallbackArchive = [];
 
     function openReportDB() {
@@ -1855,6 +1903,9 @@
       }
     }
 
+    // ==========================================
+    // 유틸리티 & 날짜 → 연도/분기 자동 계산
+    // ==========================================
     function uid(prefix = 'rep_') {
       return prefix + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
     }
@@ -1894,13 +1945,16 @@
       meta.systemModel = formatCombinedSystemModel(meta);
     }
 
+    // 엔지니어 직함/직급 제거하고 순수 "이름"만 추출 (예: "양성우 부장" 또는 "Sung-Woo Yang" -> 이름 추출)
     function extractEngineerName(fullText) {
       if (!fullText) return '';
       let cleaned = fullText.trim();
+      // 한국어 직급 제거 패턴 (부장, 차장, 과장, 대리, 사원, 연구원, 엔지니어 등)
       cleaned = cleaned.replace(/\s+(부장|차장|과장|대리|사원|연구원|엔지니어|팀장|파트장|직장|반장|전무|상무|이사|대표).*$/i, '');
       return cleaned.trim();
     }
 
+    // 날짜 문자열에서 연도(YYYY)와 분기(Q1~Q4) 자동 추출
     function inferYearAndQuarter(workPeriodStr) {
       const str = String(workPeriodStr || '');
       const match = str.match(/(20\d{2})\D+(\d{1,2})/);
@@ -1943,6 +1997,9 @@
       }
     }
 
+    // ==========================================
+    // 고객사 정보 관리 (회사이름, 담당자, 직급, 이메일, 전화번호)
+    // ==========================================
     let customerDirectory = loadCustomerDirectory();
 
     function loadCustomerDirectory() {
@@ -2020,6 +2077,7 @@
           if (emailInp) emailInp.value = matched.email;
         }
         if (matched.contactName) {
+          // 고객 정보에서 가져올 때 순수 "담당자 이름"만 자동으로 가져오도록 설정
           reportData.approval.customerText = matched.contactName;
           const signTextInp = document.getElementById('inpCustSignText');
           if (signTextInp) signTextInp.value = matched.contactName;
@@ -2133,6 +2191,7 @@
         document.getElementById('inpEmailTo').value = found.email;
       }
       if (found.contactName) {
+        // 고객 정보에서 가져올 때 순수 "담당자 이름"만 자동으로 가져오도록 설정
         reportData.approval.customerText = found.contactName;
         document.getElementById('inpCustSignText').value = found.contactName;
       }
@@ -2172,6 +2231,9 @@
       `).join('');
     }
 
+    // ==========================================
+    // 샘플 데이터 및 다이어그램
+    // ==========================================
     function makePlaceholderDiagram(title, subtitle, type) {
       let inner = '';
       if (type === 'wave1') {
@@ -2248,23 +2310,23 @@
         meta: {
           customerName: '한솔제지 대전공장',
           pmName: 'PM2',
-          systemDetail: 'QCS 800xA 6.1, WIS 7.5',
-          systemModel: 'PM : PM2 / System : QCS 800xA 6.1, WIS 7.5',
+          systemDetail: 'NP1200 / QCS800xA 5.1',
+          systemModel: 'PM : PM2 / System : NP1200 / QCS800xA 5.1',
           workPeriod,
-          division: 'IAPI/Pulp&Paper',
-          engineer: '양성우 부장'
+          division: 'AUPI/PP&f',
+          engineer: 'Kil-Dong Hong'
         },
         workingItems: [
-          '1. PM2 WIS Service.'
+          '1. Troubleshooting'
         ],
         problemStatement: {
           title: '[현장 발생 문제 현상]',
-          description: '정기 보수 기간 중 WIS Camera 렌즈 오염 및 초점 편차로 인한 결함 검출 감도 저하 예방 점검 요청.'
+          description: '현장에서 발생한 문제와 현상.'
         },
         approval: {
           enabled: true,
-          customerText: '신현',
-          engineerText: '양성우',
+          customerText: '고객 성명',
+          engineerText: '엔니지어 이름',
           customerSig: '',
           engineerSig: ''
         },
@@ -2454,7 +2516,10 @@
       if (badge) badge.textContent = list.length;
     }
 
-    let archiveGroupMode = 'YQ';
+    // ==========================================
+    // 년도·분기·고객사·PM·키워드 저장 & 보관함 관리 로직
+    // ==========================================
+    let archiveGroupMode = 'YQ'; // 'YQ' | 'CUST' | 'PM'
 
     function updateClassification(field, value) {
       reportData[field] = value;
@@ -2825,6 +2890,9 @@
       event.target.value = '';
     }
 
+    // ==========================================
+    // 편집기 및 데이터 바인딩
+    // ==========================================
     function syncAutoEmailFields() {
       const fnEl = document.getElementById('previewPdfFilename');
       if (fnEl) fnEl.textContent = `${getSuggestedFileName()}.pdf`;
@@ -2863,8 +2931,10 @@
       renderPreview();
     }
 
+    // 담당 엔지니어 입력 시 변경 처리 및 엔지니어 승인란(engineerText) 이름 자동 연동
     function updateEngineerInput(value) {
       reportData.meta.engineer = value;
+      // 엔지니어 입력란에서 순수 "이름"만 추출하여 승인란에 자동 반영
       const extractedName = extractEngineerName(value);
       reportData.approval.engineerText = extractedName;
       const engSignInput = document.getElementById('inpEngSignText');
@@ -2899,6 +2969,7 @@
       showToast('리포트 기본 정보 기준으로 메일 제목과 본문이 갱신되었습니다.', 3000);
     }
 
+    // Working Items
     function addWorkingItem() {
       const nextNum = reportData.workingItems.length + 1;
       reportData.workingItems.push(`${nextNum}. `);
@@ -2923,6 +2994,7 @@
       renderPreview();
     }
 
+    // 페이지 접기/펼치기 및 관리
     function togglePageVisibility(pIdx, event) {
       if (event) event.stopPropagation();
       const page = reportData.pages[pIdx];
@@ -2978,6 +3050,7 @@
       renderPreview();
     }
 
+    // 블록 관리
     function addBlock(pIdx, type) {
       const page = reportData.pages[pIdx];
       page.collapsed = false;
@@ -3040,6 +3113,7 @@
       renderPreview();
     }
 
+    // 이미지 리사이징 및 압축
     function processImageFile(file, callback) {
       if (!file || !file.type.startsWith('image/')) return;
       const reader = new FileReader();
@@ -3100,6 +3174,7 @@
       }
     }
 
+    // 승인란 설정
     function toggleApproval(checked) {
       reportData.approval.enabled = checked;
       saveDraft();
@@ -3112,6 +3187,7 @@
       renderPreview();
     }
 
+    // 전자 서명 캔버스
     let currentSigTarget = null;
     let isDrawing = false;
 
@@ -3204,6 +3280,7 @@
       return `항목 ${blocks.length}개`;
     }
 
+    // 좌측 편집기 렌더링
     function renderEditor() {
       document.getElementById('inpKeywords').value = reportData.keywords || '';
 
@@ -3231,6 +3308,7 @@
 
       updateDocStatusBadge();
 
+      // Working Items
       const wiWrap = document.getElementById('workingItemsEditor');
       wiWrap.innerHTML = reportData.workingItems.map((item, idx) => `
         <div class="wi-row">
@@ -3239,6 +3317,7 @@
         </div>
       `).join('');
 
+      // Pages
       const pagesWrap = document.getElementById('pagesEditor');
       pagesWrap.innerHTML = reportData.pages.map((page, pIdx) => {
         const isCollapsed = page.collapsed !== false;
@@ -3249,7 +3328,7 @@
             heading: '대제목 (번호 섹션)',
             subheading: '소제목',
             paragraph: '본문 설명 텍스트',
-            image: '단일 사진 + 캡션 (카메라 촬영 / 파일 선택)',
+            image: '단일 사진 + 캡션',
             dual_image: '2단 비교 사진 (리포트 좌/우 배치)'
           };
 
@@ -3262,7 +3341,7 @@
             const thumbHtml = b.src ? `
               <div class="editor-thumb-box">
                 <img src="${b.src}" alt="등록된 사진 썸네일" />
-                <span class="editor-thumb-label">✓ 사진 등록됨 (클릭 후 Ctrl+V 또는 촬영/선택으로 교체)</span>
+                <span class="editor-thumb-label">✓ 사진 등록됨 (클릭 후 Ctrl+V 또는 파일 선택으로 교체)</span>
               </div>
             ` : '';
 
@@ -3272,16 +3351,9 @@
                    onclick="this.focus()">
                 ${thumbHtml}
                 <p><strong>여기를 클릭 후 Ctrl+V (이미지 붙여넣기)</strong></p>
-                <small>또는 아래 버튼으로 <strong>직접 카메라 촬영</strong> 또는 앨범 사진 선택</small>
-                <div style="margin-top:6px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
-                  <label class="btn btn-primary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-                    📸 카메라로 직접 촬영
-                    <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src')" />
-                  </label>
-                  <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-                    📁 앨범/파일 선택
-                    <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src')" />
-                  </label>
+                <small>또는 아래 파일 선택 버튼으로 사진 업로드</small>
+                <div style="margin-top:6px;">
+                  <input type="file" accept="image/*" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src')" />
                 </div>
               </div>
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
@@ -3318,16 +3390,9 @@
                        onclick="this.focus()">
                     ${thumb1Html}
                     <p><strong>여기를 클릭 후 Ctrl+V (좌측 이미지 붙여넣기)</strong></p>
-                    <small>또는 촬영/파일 선택</small>
-                    <div style="margin-top:5px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
-                      <label class="btn btn-primary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-                        📸 촬영
-                        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src1')" />
-                      </label>
-                      <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-                        📁 선택
-                        <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src1')" />
-                      </label>
+                    <small>또는 파일 선택으로 업로드</small>
+                    <div style="margin-top:5px;">
+                      <input type="file" accept="image/*" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src1')" />
                     </div>
                   </div>
                   <input type="text" value="${escapeHtml(b.caption1)}" oninput="updateBlock(${pIdx}, ${bIdx}, 'caption1', this.value)" placeholder="좌측 사진 설명 (예: 교정 전)" />
@@ -3343,16 +3408,9 @@
                        onclick="this.focus()">
                     ${thumb2Html}
                     <p><strong>여기를 클릭 후 Ctrl+V (우측 이미지 붙여넣기)</strong></p>
-                    <small>또는 촬영/파일 선택</small>
-                    <div style="margin-top:5px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
-                      <label class="btn btn-primary btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-                        📸 촬영
-                        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src2')" />
-                      </label>
-                      <label class="btn btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-                        📁 선택
-                        <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src2')" />
-                      </label>
+                    <small>또는 파일 선택으로 업로드</small>
+                    <div style="margin-top:5px;">
+                      <input type="file" accept="image/*" onchange="handleImageUpload(event, ${pIdx}, ${bIdx}, 'src2')" />
                     </div>
                   </div>
                   <input type="text" value="${escapeHtml(b.caption2)}" oninput="updateBlock(${pIdx}, ${bIdx}, 'caption2', this.value)" placeholder="우측 사진 설명 (예: 교정 후)" />
@@ -3416,6 +3474,7 @@
       autoResizeAllTextareas();
     }
 
+    // 공통 상단 헤더 HTML 생성
     function buildDocHeaderHtml() {
       const m = reportData.meta;
       const pmVal = (m.pmName || '').trim();
@@ -3476,6 +3535,7 @@
       return parts.join('  ');
     }
 
+    // 우측 A4 미리보기 렌더링
     function renderPreview() {
       const container = document.getElementById('previewContainer');
       const totalPages = reportData.pages.length;
@@ -3516,7 +3576,7 @@
           if (b.type === 'image') {
             const imgTag = b.src
               ? `<img src="${b.src}" style="max-height:${b.height}px;" alt="Service Photo" />`
-              : `<div style="width:85%; height:${b.height}px; border:1.5px dashed #cbd5e1; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:12px;">[사진 미첨부] 카메라로 직접 촬영하거나 이미지를 추가하세요</div>`;
+              : `<div style="width:85%; height:${b.height}px; border:1.5px dashed #cbd5e1; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:12px;">[사진 미첨부] 좌측 편집기에서 이미지를 붙여넣거나 업로드하세요</div>`;
             const capTag = b.caption ? `<div class="doc-image-caption">${escapeHtml(b.caption)}</div>` : '';
             return `<div class="doc-image-block">${imgTag}${capTag}</div>`;
           }
