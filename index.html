@@ -36,8 +36,12 @@
       overflow: hidden;
     }
 
-    /* 상단 툴바 */
+    /* 상단 툴바 (모든 화면 크기에서 상단 고정) */
     .top-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      flex-shrink: 0;
       background: #0f172a;
       color: #fff;
       padding: 10px 16px;
@@ -46,8 +50,7 @@
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      z-index: 20;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
 
     .toolbar-left {
@@ -186,7 +189,7 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
       font-size: 13px;
       line-height: 1.5;
-      max-width: 430px;
+      max-width: 450px;
       z-index: 200;
       display: none;
     }
@@ -293,6 +296,12 @@
 
     .form-group.full {
       grid-column: 1 / -1;
+    }
+
+    .sig-btn-row {
+      display: flex;
+      gap: 5px;
+      margin-top: 3px;
     }
 
     /* 키워드 입력 박스 강조 스타일 */
@@ -698,12 +707,65 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
       border-bottom: 1px solid #94a3b8;
+    }
+
+    .preview-subbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 미리보기 줌 컨트롤 바 */
+    .zoom-controls {
+      display: inline-flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .zoom-btn {
+      border: none;
+      background: transparent;
+      color: #1e293b;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background-color 0.12s;
+    }
+
+    .zoom-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .zoom-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0f172a;
+      padding: 0 8px;
+      min-width: 46px;
+      text-align: center;
+      border-left: 1px solid #cbd5e1;
+      border-right: 1px solid #cbd5e1;
+      user-select: none;
+    }
+
+    .zoom-reset-btn {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-left: 1px solid #cbd5e1;
     }
 
     .preview-scroll {
       flex: 1;
-      overflow-y: auto;
+      overflow: auto;
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -723,6 +785,8 @@
       position: relative;
       color: #111111;
       flex-shrink: 0;
+      transform-origin: top center;
+      transition: transform 0.12s ease-out;
     }
 
     .a4-page.is-overflowing {
@@ -953,7 +1017,7 @@
       background: #f9fafb;
     }
 
-    /* 하단 승인란 (마지막 페이지: 2/3 이름 + 1/3 서명 비율) */
+    /* 하단 승인란 (마지막 페이지: 헤더 및 이름 가운데 정렬) */
     .approval-section {
       margin-top: auto;
       padding-top: 10px;
@@ -973,7 +1037,7 @@
       padding: 5px 8px;
       font-size: 9pt;
       font-weight: 700;
-      text-align: left;
+      text-align: center;
     }
 
     .approval-table td {
@@ -984,20 +1048,21 @@
     }
 
     .approval-cell-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
+      position: relative;
+      display: flex;
       align-items: center;
+      justify-content: center;
       width: 100%;
       height: 100%;
-      gap: 6px;
     }
 
     .approval-name-area {
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
       height: 100%;
-      padding: 0 4px;
+      padding: 0 8px;
       overflow: hidden;
     }
 
@@ -1008,14 +1073,21 @@
       text-align: center;
       line-height: 1.25;
       word-break: keep-all;
+      white-space: pre;
     }
 
     .approval-sig-area {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
       display: flex;
       align-items: center;
       justify-content: center;
+      max-width: 32%;
       height: 100%;
       overflow: hidden;
+      pointer-events: none;
     }
 
     .approval-sig-img {
@@ -1080,9 +1152,55 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     }
 
+    /* 백업 옵션 선택 모달 */
+    .export-modal-box {
+      width: 460px;
+      max-width: 95vw;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .export-option-card {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 11px 13px;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .export-option-card:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .export-option-card.selected {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .export-option-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .export-option-desc {
+      font-size: 12px;
+      color: #475569;
+      margin: 0;
+      line-height: 1.4;
+    }
+
     /* 대형 모달 (보관함 / 고객사 관리 공용) */
     .wide-modal-box {
-      width: 980px;
+      width: 1040px;
       max-width: 96vw;
       max-height: 89vh;
       display: flex;
@@ -1183,8 +1301,16 @@
       padding: 8px 20px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
       border-bottom: 1px solid #cbd5e1;
+      flex-wrap: wrap;
+    }
+
+    .archive-view-tabs-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
@@ -1212,8 +1338,8 @@
       padding: 10px 20px;
       border-bottom: 1px solid #cbd5e1;
       display: grid;
-      grid-template-columns: 120px 120px 145px 125px 1fr auto;
-      gap: 8px;
+      grid-template-columns: 112px 112px 140px 115px 135px 1fr auto;
+      gap: 7px;
       align-items: center;
     }
 
@@ -1283,6 +1409,16 @@
       padding: 2px 7px;
       border-radius: 4px;
       border: 1px solid #fde68a;
+    }
+
+    .badge-eng {
+      background: #f3e8ff;
+      color: #6b21a8;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid #e9d5ff;
     }
 
     .badge-active {
@@ -1365,7 +1501,7 @@
         border-bottom: 2px solid var(--border-ui);
       }
       .sticky-pages-header {
-        top: 0;
+        top: 52px;
       }
       .preview-pane {
         overflow: visible;
@@ -1424,6 +1560,8 @@
         width: 210mm !important;
         height: 296.5mm !important;
         margin: 0 !important;
+        margin-bottom: 0 !important;
+        transform: none !important;
         padding: 14mm 15mm 11mm 15mm !important;
         box-shadow: none !important;
         outline: none !important;
@@ -1458,7 +1596,7 @@
       <button class="btn btn-archive" onclick="openArchiveModal()">📂 리포트 보관함 (<span id="archiveCountBadge">0</span>)</button>
       <button class="btn btn-save" onclick="saveCurrentReportToArchive(false)">💾 리포트 저장</button>
       <button class="btn btn-dark" onclick="resetNewReport()" title="빈 리포트 새로 작성">+ 새 작성</button>
-      <button class="btn btn-dark" onclick="loadSampleReport()" title="Moorim SP 샘플 불러오기">샘플</button>
+      <button class="btn btn-dark" onclick="loadSampleReport()" title="샘플 불러오기">샘플</button>
       <button class="btn btn-mail" id="btnSendMailTop" onclick="generatePdfAndSendEmail()">✉️ PDF & 메일</button>
       <button class="btn btn-pdf" onclick="printToPdf()">📄 PDF 인쇄/저장</button>
     </div>
@@ -1511,14 +1649,14 @@
           </div>
           <div class="form-group">
             <label>ENGINEER (담당 엔지니어)</label>
-            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="Engineer Namg" />
+            <input type="text" id="inpEngineer" oninput="updateEngineerInput(this.value)" placeholder="예: Sung-Woo Yang" />
           </div>
 
           <!-- 키워드 입력 창 (저장 버튼 바로 위 배치) -->
           <div class="form-group full keyword-inline-box">
             <div class="keyword-inline-header">
               <label for="inpKeywords">🏷️ 키워드 / 태그 (쉼표로 구분 · 보관함 검색용)</label>
-              <button type="button" class="btn btn-archive btn-sm" style="padding:2px 8px; font-size:11px;" onclick="openArchiveModal()">보관함 / 검색</button>
+              <button type="button" class="btn btn-archive btn-sm" style="padding:2px 8px; font-size:11px;" onclick="openArchiveModal()">보관함 / 백업·병합</button>
             </div>
             <input type="text" id="inpKeywords" oninput="updateClassification('keywords', this.value)" placeholder="예: WIS, 카메라오버홀, 초점교정, 평량센서" />
           </div>
@@ -1547,7 +1685,7 @@
       <!-- 2-1. 현장 발생 문제 현상 (Working Items와 대제목 사이 출력) -->
       <section class="card problem-card">
         <div class="card-header">
-          <h2 class="card-title">🚨 현장 발생 문제와 현상들 (Working Items 아래 표시)</h2>
+          <h2 class="card-title">🚨 현장 발생 문제 현상 (Working Items 아래 표시)</h2>
         </div>
         <div class="form-group">
           <label>리포트 표기 제목</label>
@@ -1572,7 +1710,7 @@
         <div id="pagesEditor" style="display:flex; flex-direction:column; gap:8px;"></div>
       </section>
 
-      <!-- 4. 하단 승인란 설정 -->
+      <!-- 4. 하단 승인란 설정 (고객 이름 아래 / 엔지니어 이름 아래 각각 서명 버튼 배치) -->
       <section class="card">
         <div class="card-header">
           <h2 class="card-title">4. 하단 승인란 (마지막 페이지)</h2>
@@ -1585,16 +1723,18 @@
           <div class="form-group">
             <label>CUSTOMER APPROVAL 표기</label>
             <input type="text" id="inpCustSignText" oninput="updateApproval('customerText', this.value)" placeholder="공란 또는 서명자 성함" />
+            <div class="sig-btn-row">
+              <button class="btn btn-outline btn-sm" style="flex:1; justify-content:center;" onclick="openSigModal('customer')">✍️ 서명 그리기</button>
+              <button class="btn btn-danger btn-sm" onclick="clearSig('customer')">지우기</button>
+            </div>
           </div>
           <div class="form-group">
             <label>ENGINEER APPROVAL 표기</label>
-            <input type="text" id="inpEngSignText" oninput="updateApproval('engineerText', this.value)" placeholder="예: Engineer Namg" />
-          </div>
-          <div class="form-group full" style="display:flex; gap:6px; margin-top:2px;">
-            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openSigModal('customer')">✍️ 서명 그리기</button>
-            <button class="btn btn-danger btn-sm" onclick="clearSig('customer')">지우기</button>
-            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openSigModal('engineer')">✍️ 서명 그리기</button>
-            <button class="btn btn-danger btn-sm" onclick="clearSig('engineer')">지우기</button>
+            <input type="text" id="inpEngSignText" oninput="updateApproval('engineerText', this.value)" placeholder="예: Sung-Woo Yang" />
+            <div class="sig-btn-row">
+              <button class="btn btn-outline btn-sm" style="flex:1; justify-content:center;" onclick="openSigModal('engineer')">✍️ 서명 그리기</button>
+              <button class="btn btn-danger btn-sm" onclick="clearSig('engineer')">지우기</button>
+            </div>
           </div>
         </div>
       </section>
@@ -1630,7 +1770,7 @@
               ✉️ PDF 파일 저장 후 메일 앱 열기
             </button>
             <p class="helper-text" style="margin-top:4px;">
-              ※ 버튼 클릭 시 <strong><span id="previewPdfFilename">2026-09-21.MoorimSP.pdf</span></strong> 파일이 자동 저장되며, 기본 메일 앱이 실행됩니다.
+              ※ 버튼 클릭 시 <strong><span id="previewPdfFilename">Service Report_한솔제지 대전공장_2026-09-21.pdf</span></strong> 파일이 자동 저장되며, 기본 메일 앱이 실행됩니다.
             </p>
           </div>
         </div>
@@ -1642,7 +1782,15 @@
     <main class="preview-pane">
       <div class="preview-subbar">
         <span>실시간 A4 인쇄 미리보기 (모든 페이지 상단 헤더 및 하단 푸터 자동 반영)</span>
-        <span id="pageCountBadge" style="font-weight:700;">총 4 페이지</span>
+        <div class="preview-subbar-right">
+          <div class="zoom-controls" title="미리보기 화면 확대/축소">
+            <button type="button" class="zoom-btn" onclick="changePreviewZoom(-0.1)" title="축소">－</button>
+            <span class="zoom-label" id="previewZoomLabel">100%</span>
+            <button type="button" class="zoom-btn" onclick="changePreviewZoom(0.1)" title="확대">＋</button>
+            <button type="button" class="zoom-btn zoom-reset-btn" onclick="resetPreviewZoom()" title="기본 배율(100%)로 복원">100%</button>
+          </div>
+          <span id="pageCountBadge" style="font-weight:700;">총 4 페이지</span>
+        </div>
       </div>
       <div class="preview-scroll" id="previewContainer"></div>
     </main>
@@ -1712,18 +1860,24 @@
     </div>
   </div>
 
-  <!-- 년도·분기·고객사·PM·키워드별 리포트 보관함 모달 -->
+  <!-- 년도·분기·고객사·PM·엔지니어·키워드별 리포트 보관함 모달 -->
   <div class="modal-backdrop" id="archiveModal">
     <div class="modal-box wide-modal-box">
       <div class="wide-modal-header">
-        <h3>📂 서비스 리포트 보관함 (년도·분기 / 고객사 / PM / 키워드 검색)</h3>
+        <h3>📂 서비스 리포트 보관함 (작성자별 선택 백업 & 관리자 통합 병합 지원)</h3>
         <button class="btn btn-dark btn-sm" onclick="closeArchiveModal()">✕ 닫기</button>
       </div>
       <div class="archive-view-tabs">
-        <span style="font-size:12px; font-weight:700; color:#334155;">그룹 보기 기준:</span>
-        <button class="view-tab-btn active" id="tabGroup_YQ" onclick="setArchiveGroupMode('YQ')">📅 년도·분기별</button>
-        <button class="view-tab-btn" id="tabGroup_CUST" onclick="setArchiveGroupMode('CUST')">🏢 고객사별</button>
-        <button class="view-tab-btn" id="tabGroup_PM" onclick="setArchiveGroupMode('PM')">⚙️ PM별</button>
+        <div class="archive-view-tabs-left">
+          <span style="font-size:12px; font-weight:700; color:#334155;">그룹 보기 기준:</span>
+          <button class="view-tab-btn active" id="tabGroup_YQ" onclick="setArchiveGroupMode('YQ')">📅 년도·분기별</button>
+          <button class="view-tab-btn" id="tabGroup_CUST" onclick="setArchiveGroupMode('CUST')">🏢 고객사별</button>
+          <button class="view-tab-btn" id="tabGroup_PM" onclick="setArchiveGroupMode('PM')">⚙️ PM별</button>
+          <button class="view-tab-btn" id="tabGroup_ENG" onclick="setArchiveGroupMode('ENG')">👷 엔지니어별</button>
+        </div>
+        <span class="helper-text" style="font-weight:600; color:#1e3a8a;">
+          ※ 각자는 본인 작성분만 백업(.json) → 관리자는 여러 백업 파일을 한 번에 끌어오기(병합)
+        </span>
       </div>
       <div class="archive-filter-bar">
         <select id="filterArchiveYear" onchange="renderArchiveList()">
@@ -1742,17 +1896,81 @@
         <select id="filterArchivePm" onchange="renderArchiveList()">
           <option value="ALL">전체 PM</option>
         </select>
-        <input type="search" id="filterArchiveSearch" oninput="renderArchiveList()" placeholder="키워드, 고객사, PM, 설비, 점검 내용 통합 검색..." />
+        <select id="filterArchiveEngineer" onchange="renderArchiveList()">
+          <option value="ALL">전체 엔지니어</option>
+        </select>
+        <input type="search" id="filterArchiveSearch" oninput="renderArchiveList()" placeholder="키워드, 고객사, PM, 엔지니어, 설비 검색..." />
         <button class="btn btn-outline btn-sm" onclick="resetArchiveFilters()">초기화</button>
       </div>
       <div class="wide-modal-body" id="archiveListContainer"></div>
       <div class="wide-modal-footer">
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button class="btn btn-outline btn-sm" onclick="exportAllArchiveJson()">📤 전체 보관함 백업 (.json)</button>
-          <button class="btn btn-outline btn-sm" onclick="document.getElementById('archiveImportInput').click()">📥 보관함 파일 불러오기 (.json)</button>
-          <input type="file" id="archiveImportInput" accept=".json" style="display:none" onchange="importArchiveJson(event)" />
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <button class="btn btn-save btn-sm" onclick="openExportBackupModal()" title="본인이 작성한 리포트만 선택하거나 전체 리포트를 백업 파일로 내보냅니다">
+            📤 리포트 백업 내보내기 (작성자별 선택 / 전체)
+          </button>
+          <button class="btn btn-archive btn-sm" onclick="document.getElementById('archiveImportInput').click()" title="기존 보관함은 유지하면서 다른 엔지니어들이 보낸 백업 파일(복수 선택 가능)을 끌어와 병합합니다">
+            📥 다른 사람 리포트 끌어오기 / 병합 (.json 복수 선택)
+          </button>
+          <input type="file" id="archiveImportInput" accept=".json" multiple style="display:none" onchange="importArchiveJson(event)" />
         </div>
         <button class="btn btn-primary btn-sm" onclick="closeArchiveModal()">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 작성자별 선택 백업 내보내기 설정 모달 -->
+  <div class="modal-backdrop" id="exportBackupModal">
+    <div class="modal-box export-modal-box">
+      <div class="wide-modal-header" style="padding:12px 16px;">
+        <h3 style="font-size:15px;">📤 리포트 백업 파일 생성 (관리자 전달용)</h3>
+        <button class="btn btn-dark btn-sm" onclick="closeExportBackupModal()">✕</button>
+      </div>
+      <div style="padding:16px; display:flex; flex-direction:column; gap:10px; background:#f8fafc;">
+        <p class="helper-text" style="color:#334155;">
+          관리자에게 전달할 백업 범위를 선택하세요. 선택된 리포트만 <strong>.json</strong> 파일로 추출됩니다.
+        </p>
+
+        <label class="export-option-card selected" id="exportOptCard_ENG" onclick="selectExportMode('ENG')">
+          <div class="export-option-title">
+            <span>
+              <input type="radio" name="exportModeRadio" id="radioExport_ENG" value="ENG" checked onchange="selectExportMode('ENG')" />
+              👷 특정 엔지니어(본인)가 작성한 리포트만 백업
+            </span>
+            <span class="badge-eng" id="exportCount_ENG">0건</span>
+          </div>
+          <p class="export-option-desc">관리자에게 내가 작성한 리포트만 보낼 때 선택하세요.</p>
+          <div onclick="event.stopPropagation()">
+            <select id="exportEngineerSelect" onchange="updateExportCounts()">
+              <option value="">엔지니어 선택...</option>
+            </select>
+          </div>
+        </label>
+
+        <label class="export-option-card" id="exportOptCard_FILTERED" onclick="selectExportMode('FILTERED')">
+          <div class="export-option-title">
+            <span>
+              <input type="radio" name="exportModeRadio" id="radioExport_FILTERED" value="FILTERED" onchange="selectExportMode('FILTERED')" />
+              🔍 현재 보관함 필터·검색 조건에 표시된 리포트만 백업
+            </span>
+            <span class="badge-yq" id="exportCount_FILTERED">0건</span>
+          </div>
+          <p class="export-option-desc">보관함에서 연도·분기·고객사·키워드로 걸러낸 항목만 내보냅니다.</p>
+        </label>
+
+        <label class="export-option-card" id="exportOptCard_ALL" onclick="selectExportMode('ALL')">
+          <div class="export-option-title">
+            <span>
+              <input type="radio" name="exportModeRadio" id="radioExport_ALL" value="ALL" onchange="selectExportMode('ALL')" />
+              🗂️ 보관함 전체 리포트 백업 (관리자 통합 백업용)
+            </span>
+            <span class="badge-pm" id="exportCount_ALL">0건</span>
+          </div>
+          <p class="export-option-desc">보관함에 저장된 모든 리포트를 통째로 백업합니다.</p>
+        </label>
+      </div>
+      <div class="wide-modal-footer" style="padding:10px 16px;">
+        <button class="btn btn-outline btn-sm" onclick="closeExportBackupModal()">취소</button>
+        <button class="btn btn-primary btn-sm" onclick="executeSelectedBackupExport()">💾 선택한 범위 백업 다운로드</button>
       </div>
     </div>
   </div>
@@ -1789,6 +2007,39 @@
       Q3: '3분기 (Q3)',
       Q4: '4분기 (Q4)'
     };
+
+    // 미리보기 화면 배율(Zoom) 상태
+    let previewZoomLevel = 1.0;
+
+    function changePreviewZoom(delta) {
+      const next = Math.round((previewZoomLevel + delta) * 100) / 100;
+      previewZoomLevel = Math.min(1.6, Math.max(0.5, next));
+      applyPreviewZoom();
+    }
+
+    function resetPreviewZoom() {
+      previewZoomLevel = 1.0;
+      applyPreviewZoom();
+    }
+
+    function applyPreviewZoom() {
+      const labelEl = document.getElementById('previewZoomLabel');
+      if (labelEl) {
+        labelEl.textContent = `${Math.round(previewZoomLevel * 100)}%`;
+      }
+      const pageEls = document.querySelectorAll('#previewContainer .a4-page');
+      pageEls.forEach(pageEl => {
+        if (previewZoomLevel === 1.0) {
+          pageEl.style.transform = '';
+          pageEl.style.marginBottom = '';
+        } else {
+          pageEl.style.transform = `scale(${previewZoomLevel})`;
+          const baseHeight = pageEl.offsetHeight || 1122;
+          const heightDiff = baseHeight * (previewZoomLevel - 1);
+          pageEl.style.marginBottom = `${heightDiff}px`;
+        }
+      });
+    }
 
     // ABB 벡터 로고 SVG
     const ABB_LOGO_SVG = `
@@ -1919,6 +2170,14 @@
         .replace(/"/g, '&quot;');
     }
 
+    // 승인란 고객사 담당자 이름: 각 글자 사이를 두 칸씩 자동으로 띄움 (예: 박종우 -> 박  종  우)
+    function formatSpacedApprovalName(name) {
+      const trimmed = (name || '').trim();
+      if (!trimmed) return '';
+      const chars = Array.from(trimmed.replace(/\s+/g, ''));
+      return chars.join('  ');
+    }
+
     function formatCombinedSystemModel(meta) {
       if (!meta) return '';
       const pm = (meta.pmName || '').trim();
@@ -1945,10 +2204,10 @@
       meta.systemModel = formatCombinedSystemModel(meta);
     }
 
+    // 엔지니어 직함/직급 제거하고 순수 "이름"만 추출
     function extractEngineerName(fullText) {
       if (!fullText) return '';
       let cleaned = fullText.trim();
-      // 한국어 직급 제거 패턴 (부장, 차장, 과장, 대리, 사원, 연구원, 엔지니어 등)
       cleaned = cleaned.replace(/\s+(부장|차장|과장|대리|사원|연구원|엔지니어|팀장|파트장|직장|반장|전무|상무|이사|대표).*$/i, '');
       return cleaned.trim();
     }
@@ -2076,11 +2335,11 @@
           if (emailInp) emailInp.value = matched.email;
         }
         if (matched.contactName) {
-          // 고객 정보에서 가져올 때 순수 "담당자 이름"만 자동으로 가져오도록 설정
           reportData.approval.customerText = matched.contactName;
           const signTextInp = document.getElementById('inpCustSignText');
           if (signTextInp) signTextInp.value = matched.contactName;
         }
+        syncAutoEmailFields();
         saveDraft();
         renderEditor();
         renderPreview();
@@ -2092,9 +2351,18 @@
       const trimmed = (val || '').trim().toLowerCase();
       if (!trimmed) return;
       const matched = customerDirectory.find(c => (c.email || '').trim().toLowerCase() === trimmed);
-      if (matched && matched.companyName && !reportData.meta.customerName) {
-        document.getElementById('inpCustomer').value = matched.companyName;
-        updateMeta('customerName', matched.companyName);
+      if (matched) {
+        if (matched.companyName && !reportData.meta.customerName) {
+          document.getElementById('inpCustomer').value = matched.companyName;
+          updateMeta('customerName', matched.companyName);
+        }
+        if (matched.contactName && !reportData.approval.customerText) {
+          reportData.approval.customerText = matched.contactName;
+          document.getElementById('inpCustSignText').value = matched.contactName;
+        }
+        syncAutoEmailFields();
+        saveDraft();
+        renderPreview();
       }
     }
 
@@ -2154,6 +2422,7 @@
       }
 
       saveCustomerDirectory();
+      syncAutoEmailFields();
       resetCustomerForm();
       renderCustomerTable();
     }
@@ -2184,16 +2453,16 @@
       const found = customerDirectory.find(c => c.id === id);
       if (!found) return;
       document.getElementById('inpCustomer').value = found.companyName || '';
-      updateMeta('customerName', found.companyName || '');
+      reportData.meta.customerName = found.companyName || '';
       if (found.email) {
         reportData.email.to = found.email;
         document.getElementById('inpEmailTo').value = found.email;
       }
       if (found.contactName) {
-        // 고객 정보에서 가져올 때 순수 "담당자 이름"만 자동으로 가져오도록 설정
         reportData.approval.customerText = found.contactName;
         document.getElementById('inpCustSignText').value = found.contactName;
       }
+      syncAutoEmailFields();
       saveDraft();
       renderEditor();
       renderPreview();
@@ -2277,14 +2546,46 @@
       return `[ABB Service Report] ${cust}${period ? ' (' + period + ')' : ''}${sys ? ' - ' + sys : ''}`;
     }
 
+    // 메일 본문 첫 인사말: "안녕하세요. 고객이름 직급,"
+    function getCustomerGreetingTarget(data) {
+      const m = data.meta || {};
+      const emailTo = ((data.email && data.email.to) || '').trim().toLowerCase();
+      const companyKey = (m.customerName || '').trim().toLowerCase();
+      const signName = ((data.approval && data.approval.customerText) || '').trim();
+
+      let matched = null;
+      if (emailTo) {
+        matched = customerDirectory.find(c => (c.email || '').trim().toLowerCase() === emailTo);
+      }
+      if (!matched && companyKey && signName) {
+        matched = customerDirectory.find(c =>
+          (c.companyName || '').trim().toLowerCase() === companyKey &&
+          (c.contactName || '').trim() === signName
+        );
+      }
+      if (!matched && companyKey) {
+        matched = customerDirectory.find(c => (c.companyName || '').trim().toLowerCase() === companyKey);
+      }
+
+      const contactName = signName || (matched && (matched.contactName || '').trim()) || '';
+      const title = (matched && (matched.title || '').trim()) || '';
+
+      if (contactName && title) return `${contactName} ${title}`;
+      if (contactName) return `${contactName} 님`;
+      if ((m.customerName || '').trim()) return `${m.customerName.trim()} 담당자님`;
+      return '고객님';
+    }
+
     function buildDefaultEmailBody(data) {
       const m = data.meta;
       const sysDisplay = formatCombinedSystemModel(m);
+      const greetingTarget = getCustomerGreetingTarget(data);
       const itemsText = (data.workingItems || [])
         .filter(item => item.trim())
         .join('\n');
       return [
-        `안녕하세요, ABB ${m.division || ''} ${m.engineer || ''}입니다.`,
+        `안녕하세요. ${greetingTarget},`,
+        `ABB ${m.division || ''} ${m.engineer || ''}입니다.`,
         ``,
         `${m.workPeriod || ''} 진행된 ${m.customerName || '귀사'} (${sysDisplay}) 서비스 점검 리포트를 송부드립니다.`,
         itemsText ? `\n[Working Items]\n${itemsText}` : '',
@@ -2309,23 +2610,23 @@
         meta: {
           customerName: '한솔제지 대전공장',
           pmName: 'PM2',
-          systemDetail: 'NP1200 / QCS800xA 5.1',
-          systemModel: 'PM : PM2 / System : NP1200 / QCS800xA 5.1',
+          systemDetail: 'QCS 800xA 6.1, WIS 7.5',
+          systemModel: 'PM : PM2 / System : QCS 800xA 6.1, WIS 7.5',
           workPeriod,
-          division: 'AUPI/PP&f',
-          engineer: 'Engineer Namg'
+          division: 'IAPI/Pulp&Paper',
+          engineer: '양성우 부장'
         },
         workingItems: [
-          '1. Troubleshooting'
+          '1. PM2 WIS Service.'
         ],
         problemStatement: {
           title: '[현장 발생 문제 현상]',
-          description: '현장에서 발생한 문제와 현상.'
+          description: '정기 보수 기간 중 WIS Camera 렌즈 오염 및 초점 편차로 인한 결함 검출 감도 저하 예방 점검 요청.'
         },
         approval: {
           enabled: true,
-          customerText: '고객 성명',
-          engineerText: '엔니지어 이름',
+          customerText: '신현',
+          engineerText: '양성우',
           customerSig: '',
           engineerSig: ''
         },
@@ -2516,9 +2817,10 @@
     }
 
     // ==========================================
-    // 년도·분기·고객사·PM·키워드 저장 & 보관함 관리 로직
+    // 년도·분기·고객사·PM·엔지니어·키워드 저장 & 보관함 관리 로직
     // ==========================================
-    let archiveGroupMode = 'YQ'; // 'YQ' | 'CUST' | 'PM'
+    let archiveGroupMode = 'YQ'; // 'YQ' | 'CUST' | 'PM' | 'ENG'
+    let lastFilteredArchiveReports = [];
 
     function updateClassification(field, value) {
       reportData[field] = value;
@@ -2562,7 +2864,7 @@
 
     function setArchiveGroupMode(mode) {
       archiveGroupMode = mode;
-      ['YQ', 'CUST', 'PM'].forEach(m => {
+      ['YQ', 'CUST', 'PM', 'ENG'].forEach(m => {
         const btn = document.getElementById(`tabGroup_${m}`);
         if (btn) btn.classList.toggle('active', m === mode);
       });
@@ -2583,6 +2885,7 @@
       document.getElementById('filterArchiveQuarter').value = 'ALL';
       document.getElementById('filterArchiveCustomer').value = 'ALL';
       document.getElementById('filterArchivePm').value = 'ALL';
+      document.getElementById('filterArchiveEngineer').value = 'ALL';
       document.getElementById('filterArchiveSearch').value = '';
       renderArchiveList();
     }
@@ -2622,10 +2925,21 @@
         pmFilterEl.value = prevPmVal;
       }
 
+      const engFilterEl = document.getElementById('filterArchiveEngineer');
+      const prevEngVal = engFilterEl.value;
+      const engSet = new Set(allReports.map(r => (r.meta?.engineer || '').trim()).filter(Boolean));
+      const sortedEngs = Array.from(engSet).sort((a, b) => a.localeCompare(b, 'ko'));
+      engFilterEl.innerHTML = `<option value="ALL">전체 엔지니어 (${sortedEngs.length})</option>` +
+        sortedEngs.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
+      if (sortedEngs.includes(prevEngVal) || prevEngVal === 'ALL') {
+        engFilterEl.value = prevEngVal;
+      }
+
       const selectedYear = yearFilterEl.value;
       const selectedQuarter = document.getElementById('filterArchiveQuarter').value;
       const selectedCustomer = custFilterEl.value;
       const selectedPm = pmFilterEl.value;
+      const selectedEng = engFilterEl.value;
       const keyword = (document.getElementById('filterArchiveSearch').value || '').trim().toLowerCase();
 
       const filtered = allReports.filter(r => {
@@ -2633,6 +2947,7 @@
         if (selectedQuarter !== 'ALL' && r.quarter !== selectedQuarter) return false;
         if (selectedCustomer !== 'ALL' && (r.meta?.customerName || '').trim() !== selectedCustomer) return false;
         if (selectedPm !== 'ALL' && (r.meta?.pmName || '').trim() !== selectedPm) return false;
+        if (selectedEng !== 'ALL' && (r.meta?.engineer || '').trim() !== selectedEng) return false;
         if (keyword) {
           const pageTexts = (r.pages || []).flatMap(p => (p.blocks || []).map(b => `${b.text || ''} ${b.caption || ''} ${b.caption1 || ''} ${b.caption2 || ''}`));
           const hay = [
@@ -2660,6 +2975,8 @@
         return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
       });
 
+      lastFilteredArchiveReports = filtered;
+
       const container = document.getElementById('archiveListContainer');
       if (filtered.length === 0) {
         container.innerHTML = `
@@ -2683,6 +3000,10 @@
           const pName = (rep.meta?.pmName || '').trim() || 'PM 미지정';
           key = `PM_${pName}`;
           groupTitle = `⚙️ PM 호기: ${pName}`;
+        } else if (archiveGroupMode === 'ENG') {
+          const eName = (rep.meta?.engineer || '').trim() || '엔지니어 미지정';
+          key = `ENG_${eName}`;
+          groupTitle = `👷 담당 엔지니어: ${eName}`;
         } else {
           const qLabel = QUARTER_LABELS[rep.quarter] || rep.quarter;
           key = `YQ_${rep.year}_${rep.quarter}`;
@@ -2703,6 +3024,7 @@
           const isCurrent = rep.reportId === reportData.reportId && reportData.isSavedInArchive;
           const qLabel = QUARTER_LABELS[rep.quarter] || rep.quarter;
           const pmName = (rep.meta?.pmName || '').trim();
+          const engName = (rep.meta?.engineer || '').trim();
           const sysDisplay = formatCombinedSystemModel(rep.meta);
           const wiText = (rep.workingItems || []).filter(Boolean).join(' / ') || '작업 요약 없음';
           const kwList = (rep.keywords || '')
@@ -2723,14 +3045,14 @@
                 <div class="archive-item-top">
                   <span class="badge-yq">${escapeHtml(rep.year)}년 ${escapeHtml(qLabel)}</span>
                   ${pmName ? `<span class="badge-pm">PM : ${escapeHtml(pmName)}</span>` : ''}
+                  ${engName ? `<span class="badge-eng">👷 ${escapeHtml(engName)}</span>` : ''}
                   <span class="archive-cust-name">${escapeHtml(rep.meta?.customerName || '고객사 미지정')}</span>
                   ${isCurrent ? '<span class="badge-active">현재 열림</span>' : ''}
                 </div>
                 <div class="archive-meta-sub">
                   작업일: <strong>${escapeHtml(rep.meta?.workPeriod || '-')}</strong> &nbsp;|&nbsp;
                   설비: ${escapeHtml(sysDisplay || '-')} &nbsp;|&nbsp;
-                  총 ${(rep.pages || []).length}페이지 &nbsp;|&nbsp;
-                  엔지니어: ${escapeHtml(rep.meta?.engineer || '-')}
+                  총 ${(rep.pages || []).length}페이지
                 </div>
                 ${kwHtml}
                 <div class="archive-wi-preview">
@@ -2828,64 +3150,201 @@
       showToast('🗑️ 리포트가 보관함에서 삭제되었습니다.', 3000);
     }
 
-    async function exportAllArchiveJson() {
-      const allReports = await dbGetAllReports();
-      if (allReports.length === 0) {
-        alert('백업할 저장된 리포트가 없습니다.');
+    // ==========================================
+    // 작성자별 선택 백업 내보내기 & 관리자 다중 파일 끌어오기(병합)
+    // ==========================================
+    let currentExportMode = 'ENG';
+    let cachedAllReportsForExport = [];
+
+    async function openExportBackupModal() {
+      cachedAllReportsForExport = await dbGetAllReports();
+      if (cachedAllReportsForExport.length === 0) {
+        alert('내보낼 저장된 리포트가 없습니다. 먼저 리포트를 저장해 주세요.');
         return;
       }
+
+      const engSelect = document.getElementById('exportEngineerSelect');
+      const engMap = new Map();
+      cachedAllReportsForExport.forEach(r => {
+        const eng = (r.meta?.engineer || '').trim() || '엔지니어 미지정';
+        engMap.set(eng, (engMap.get(eng) || 0) + 1);
+      });
+
+      const sortedEngs = Array.from(engMap.keys()).sort((a, b) => a.localeCompare(b, 'ko'));
+      engSelect.innerHTML = sortedEngs.map(eng =>
+        `<option value="${escapeHtml(eng)}">${escapeHtml(eng)} (${engMap.get(eng)}건)</option>`
+      ).join('');
+
+      const currentEng = (reportData.meta?.engineer || '').trim();
+      if (currentEng && sortedEngs.includes(currentEng)) {
+        engSelect.value = currentEng;
+      }
+
+      selectExportMode('ENG');
+      updateExportCounts();
+      document.getElementById('exportBackupModal').classList.add('open');
+    }
+
+    function closeExportBackupModal() {
+      document.getElementById('exportBackupModal').classList.remove('open');
+    }
+
+    function selectExportMode(mode) {
+      currentExportMode = mode;
+      ['ENG', 'FILTERED', 'ALL'].forEach(m => {
+        const card = document.getElementById(`exportOptCard_${m}`);
+        const radio = document.getElementById(`radioExport_${m}`);
+        if (card) card.classList.toggle('selected', m === mode);
+        if (radio) radio.checked = (m === mode);
+      });
+    }
+
+    function updateExportCounts() {
+      const selectedEng = document.getElementById('exportEngineerSelect').value;
+      const engCount = cachedAllReportsForExport.filter(r =>
+        ((r.meta?.engineer || '').trim() || '엔지니어 미지정') === selectedEng
+      ).length;
+      document.getElementById('exportCount_ENG').textContent = `${engCount}건`;
+      document.getElementById('exportCount_FILTERED').textContent = `${lastFilteredArchiveReports.length}건`;
+      document.getElementById('exportCount_ALL').textContent = `${cachedAllReportsForExport.length}건`;
+    }
+
+    function executeSelectedBackupExport() {
+      let targetReports = [];
+      let fileTag = 'All';
+
+      if (currentExportMode === 'ENG') {
+        const selectedEng = document.getElementById('exportEngineerSelect').value;
+        targetReports = cachedAllReportsForExport.filter(r =>
+          ((r.meta?.engineer || '').trim() || '엔지니어 미지정') === selectedEng
+        );
+        fileTag = selectedEng.replace(/[\\/:*?"<>|\s]+/g, '_');
+      } else if (currentExportMode === 'FILTERED') {
+        targetReports = lastFilteredArchiveReports;
+        fileTag = 'Filtered';
+      } else {
+        targetReports = cachedAllReportsForExport;
+        fileTag = 'All';
+      }
+
+      if (targetReports.length === 0) {
+        alert('선택한 조건에 해당하는 리포트가 없습니다.');
+        return;
+      }
+
       const payload = {
         exportedAt: new Date().toISOString(),
+        exportedBy: (reportData.meta?.engineer || '').trim() || fileTag,
+        exportScope: currentExportMode,
         type: 'ABB_ServiceReport_Archive',
-        count: allReports.length,
-        reports: allReports
+        count: targetReports.length,
+        reports: targetReports
       };
+
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const today = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `ABB_ServiceReports_Archive_${today}.json`;
+      a.download = `ABB_ServiceReports_${fileTag}_${today}.json`;
       a.click();
       URL.revokeObjectURL(url);
+
+      closeExportBackupModal();
+      showToast(`📤 총 <strong>${targetReports.length}건</strong>의 리포트가 백업 파일(<strong>ABB_ServiceReports_${escapeHtml(fileTag)}_${today}.json</strong>)로 저장되었습니다.`, 5000);
+    }
+
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(e);
+        reader.readAsText(file);
+      });
     }
 
     async function importArchiveJson(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async function (e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          let listToImport = [];
-          if (parsed && parsed.type === 'ABB_ServiceReport_Archive' && Array.isArray(parsed.reports)) {
-            listToImport = parsed.reports;
-          } else if (parsed && parsed.meta && Array.isArray(parsed.pages)) {
-            if (!parsed.reportId) parsed.reportId = uid();
-            if (!parsed.year || !parsed.quarter) {
-              const inf = inferYearAndQuarter(parsed.meta.workPeriod);
-              parsed.year = inf.year;
-              parsed.quarter = inf.quarter;
-            }
-            listToImport = [parsed];
-          } else {
-            alert('올바른 리포트 백업 JSON 파일이 아닙니다.');
-            return;
-          }
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
 
-          for (const item of listToImport) {
-            migrateLegacySystemModel(item.meta);
-            item.isSavedInArchive = true;
-            await dbPutReport(item);
+      try {
+        const existingReports = await dbGetAllReports();
+        const existingMap = new Map(existingReports.map(r => [r.reportId, r]));
+
+        let addedCount = 0;
+        let updatedCount = 0;
+        let skippedOlderCount = 0;
+        let invalidFileCount = 0;
+
+        for (const file of files) {
+          try {
+            const rawText = await readFileAsText(file);
+            const parsed = JSON.parse(rawText);
+            let listToImport = [];
+
+            if (parsed && parsed.type === 'ABB_ServiceReport_Archive' && Array.isArray(parsed.reports)) {
+              listToImport = parsed.reports;
+            } else if (parsed && parsed.meta && Array.isArray(parsed.pages)) {
+              if (!parsed.reportId) parsed.reportId = uid();
+              if (!parsed.year || !parsed.quarter) {
+                const inf = inferYearAndQuarter(parsed.meta.workPeriod);
+                parsed.year = inf.year;
+                parsed.quarter = inf.quarter;
+              }
+              listToImport = [parsed];
+            } else {
+              invalidFileCount++;
+              continue;
+            }
+
+            for (const item of listToImport) {
+              if (!item.reportId) item.reportId = uid();
+              migrateLegacySystemModel(item.meta);
+              item.isSavedInArchive = true;
+
+              const prev = existingMap.get(item.reportId);
+              if (!prev) {
+                await dbPutReport(item);
+                existingMap.set(item.reportId, item);
+                addedCount++;
+              } else {
+                const prevTime = Date.parse(prev.updatedAt || 0) || 0;
+                const nextTime = Date.parse(item.updatedAt || 0) || 0;
+                if (nextTime >= prevTime) {
+                  await dbPutReport(item);
+                  existingMap.set(item.reportId, item);
+                  updatedCount++;
+                } else {
+                  skippedOlderCount++;
+                }
+              }
+            }
+          } catch (fileErr) {
+            invalidFileCount++;
           }
-          await updateArchiveCountBadge();
-          await renderArchiveList();
-          showToast(`📥 총 <strong>${listToImport.length}건</strong>의 리포트를 보관함으로 가져왔습니다.`, 4500);
-        } catch (err) {
-          alert('백업 파일을 읽는 중 오류가 발생했습니다.');
         }
-      };
-      reader.readAsText(file);
+
+        await updateArchiveCountBadge();
+        await renderArchiveList();
+
+        const summaryParts = [];
+        if (addedCount > 0) summaryParts.push(`신규 추가 <strong>${addedCount}건</strong>`);
+        if (updatedCount > 0) summaryParts.push(`최신본 갱신 <strong>${updatedCount}건</strong>`);
+        if (skippedOlderCount > 0) summaryParts.push(`기존 최신본 유지 <strong>${skippedOlderCount}건</strong>`);
+        if (invalidFileCount > 0) summaryParts.push(`형식 오류 파일 ${invalidFileCount}개 제외`);
+
+        if (summaryParts.length > 0) {
+          showToast(
+            `📥 <strong>${files.length}개 파일</strong> 병합 완료 (기존 보관함 유지):<br>${summaryParts.join(' · ')}`,
+            6000
+          );
+        } else {
+          alert('올바른 리포트 백업 JSON 파일이 아닙니다.');
+        }
+      } catch (err) {
+        alert('백업 파일을 병합하는 중 오류가 발생했습니다.');
+      }
+
       event.target.value = '';
     }
 
@@ -2933,7 +3392,6 @@
     // 담당 엔지니어 입력 시 변경 처리 및 엔지니어 승인란(engineerText) 이름 자동 연동
     function updateEngineerInput(value) {
       reportData.meta.engineer = value;
-      // 엔지니어 입력란에서 순수 "이름"만 추출하여 승인란에 자동 반영
       const extractedName = extractEngineerName(value);
       reportData.approval.engineerText = extractedName;
       const engSignInput = document.getElementById('inpEngSignText');
@@ -3182,6 +3640,9 @@
 
     function updateApproval(key, val) {
       reportData.approval[key] = val;
+      if (key === 'customerText') {
+        syncAutoEmailFields();
+      }
       saveDraft();
       renderPreview();
     }
@@ -3597,6 +4058,7 @@
         }).join('');
 
         const app = reportData.approval || {};
+        const spacedCustomerName = formatSpacedApprovalName(app.customerText);
 
         const approvalHtml = (isLast && app.enabled) ? `
           <div class="approval-section">
@@ -3609,11 +4071,9 @@
                 <td>
                   <div class="approval-cell-grid">
                     <div class="approval-name-area">
-                      <div class="approval-signer-text">${escapeHtml(app.customerText)}</div>
+                      <div class="approval-signer-text">${escapeHtml(spacedCustomerName)}</div>
                     </div>
-                    <div class="approval-sig-area">
-                      ${app.customerSig ? `<img class="approval-sig-img" src="${app.customerSig}" alt="Customer Signature" />` : ''}
-                    </div>
+                    ${app.customerSig ? `<div class="approval-sig-area"><img class="approval-sig-img" src="${app.customerSig}" alt="Customer Signature" /></div>` : ''}
                   </div>
                 </td>
                 <td>
@@ -3621,9 +4081,7 @@
                     <div class="approval-name-area">
                       <div class="approval-signer-text">${escapeHtml(app.engineerText)}</div>
                     </div>
-                    <div class="approval-sig-area">
-                      ${app.engineerSig ? `<img class="approval-sig-img" src="${app.engineerSig}" alt="Engineer Signature" />` : ''}
-                    </div>
+                    ${app.engineerSig ? `<div class="approval-sig-area"><img class="approval-sig-img" src="${app.engineerSig}" alt="Engineer Signature" /></div>` : ''}
                   </div>
                 </td>
               </tr>
@@ -3662,6 +4120,7 @@
             }
           }
         });
+        applyPreviewZoom();
       });
     }
 
@@ -3672,11 +4131,13 @@
       reportData = getSampleData();
       reportData.email.to = savedEmailTo;
       reportData.email.cc = savedEmailCc;
+      syncAutoEmailFields();
       saveDraft();
       renderEditor();
       renderPreview();
     }
 
+    // 새 작성: Page 1에 대제목 -> 소제목 -> 본문설명 텍스트 -> 단일사진 + 캡션 순으로 생성
     function resetNewReport() {
       if (!confirm('새 리포트를 작성하시겠습니까? (보관함에 저장된 기존 리포트는 유지됩니다)')) return;
       const today = new Date();
@@ -3696,8 +4157,8 @@
         meta: {
           customerName: '',
           pmName: '',
-          systemDetail: 'QCS 800xA 6.1',
-          systemModel: 'System : QCS 800xA 6.1',
+          systemDetail: 'QCS 800xA 6.1, WIS 7.5',
+          systemModel: 'System : QCS 800xA 6.1, WIS 7.5',
           workPeriod: periodStr,
           division: reportData.meta.division || 'IAPI/Pulp&Paper',
           engineer: reportData.meta.engineer || '양성우 부장'
@@ -3724,9 +4185,10 @@
         pages: [
           {
             id: uid(),
-            collapsed: true,
+            collapsed: false,
             blocks: [
               { id: uid(), type: 'heading', text: '1. 점검 내역.' },
+              { id: uid(), type: 'subheading', text: '세부 점검 항목' },
               { id: uid(), type: 'paragraph', text: '' },
               { id: uid(), type: 'image', src: '', height: 240, caption: '' }
             ]
@@ -3739,18 +4201,17 @@
       renderPreview();
     }
 
+    // PDF 파일명 규칙: 'Service Report_고객사 이름_날짜'
     function getSuggestedFileName() {
+      const custClean = (reportData.meta.customerName || '고객사')
+        .trim()
+        .replace(/[\\/:*?"<>|]/g, '');
       const dateClean = (reportData.meta.workPeriod || '2026-01-01')
+        .trim()
         .replace(/\.\s*/g, '-')
-        .replace(/[^0-9-]/g, '')
+        .replace(/[\\/:*?"<>|]/g, '')
         .replace(/-+$/, '');
-      const custClean = (reportData.meta.customerName || 'Customer')
-        .replace(/\s+/g, '')
-        .replace(/[\\/:*?"<>|]/g, '');
-      const pmClean = (reportData.meta.pmName || '')
-        .replace(/\s+/g, '')
-        .replace(/[\\/:*?"<>|]/g, '');
-      return `${dateClean || 'Report'}.${custClean || 'Service'}${pmClean ? '.' + pmClean : ''}`;
+      return `Service Report_${custClean || '고객사'}_${dateClean || '날짜'}`;
     }
 
     async function generatePdfAndSendEmail() {
@@ -3789,10 +4250,14 @@
             const warnEl = pageEl.querySelector('.overflow-warning');
             const prevShadow = pageEl.style.boxShadow;
             const prevOutline = pageEl.style.outline;
+            const prevTransform = pageEl.style.transform;
+            const prevMarginBottom = pageEl.style.marginBottom;
 
             if (warnEl) warnEl.style.display = 'none';
             pageEl.style.boxShadow = 'none';
             pageEl.style.outline = 'none';
+            pageEl.style.transform = 'none';
+            pageEl.style.marginBottom = '0';
 
             const canvas = await window.html2canvas(pageEl, {
               scale: 2,
@@ -3804,6 +4269,8 @@
             if (warnEl) warnEl.style.display = '';
             pageEl.style.boxShadow = prevShadow;
             pageEl.style.outline = prevOutline;
+            pageEl.style.transform = prevTransform;
+            pageEl.style.marginBottom = prevMarginBottom;
 
             const imgData = canvas.toDataURL('image/jpeg', 0.94);
             if (i > 0) pdf.addPage();
